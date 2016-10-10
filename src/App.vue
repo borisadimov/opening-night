@@ -1,0 +1,231 @@
+<template lang="pug">
+  .app
+    header-component
+
+    slider-component
+
+    video-component
+
+    a.watch-it-now(href="/")
+      .title
+        | Watch It Now
+      .subtitle
+        | starting at $2.99 on Amazon Demand
+
+    .footer
+      .logos
+        .dark-factory
+        .itaca
+        .little-luca
+        .globecom
+
+      .nav
+        .nav-list
+          .nav-item
+            | TERMS & CONDITIONS
+          .separate
+            | |
+          .nav-item
+            | PRIVACY POLICY
+
+        .nav-copy
+          | ©2016 BENITO FILMS, LLC ALL RIGHTS RESERVED.
+</template>
+
+<script>
+import HeaderComponent from 'components/Header';
+import SliderComponent from 'components/Slider';
+import VideoComponent from 'components/Video';
+
+export default {
+  components: {
+    HeaderComponent,
+    SliderComponent,
+    VideoComponent
+  }
+}
+</script>
+
+<style lang="scss" rel="stylesheet/scss">
+  @font-face {
+  	font-family: 'Open Sans Hebrew Condensed';
+  	src: url('assets/fonts/OpenSansHebrewCondensed-Regular.eot');
+  	src: url('assets/fonts/OpenSansHebrewCondensed-Regular.eot?#iefix') format('embedded-opentype'),
+  		url('assets/fonts/OpenSansHebrewCondensed-Regular.woff') format('woff'),
+  		url('assets/fonts/OpenSansHebrewCondensed-Regular.ttf') format('truetype');
+  	font-weight: normal;
+  	font-style: normal;
+  }
+
+  @font-face {
+  	font-family: 'Open Sans Condensed';
+  	src: url('assets/fonts/OpenSans-CondensedBold.eot');
+  	src: url('assets/fonts/OpenSans-CondensedBold.eot?#iefix') format('embedded-opentype'),
+  		url('assets/fonts/OpenSans-CondensedBold.woff') format('woff'),
+  		url('assets/fonts/OpenSans-CondensedBold.ttf') format('truetype');
+  	font-weight: bold;
+  	font-style: normal;
+  }
+
+  @font-face {
+  	font-family: 'Open Sans Hebrew Condensed';
+  	src: url('assets/fonts/OpenSansHebrewCondensed-Bold.eot');
+  	src: url('assets/fonts/OpenSansHebrewCondensed-Bold.eot?#iefix') format('embedded-opentype'),
+  		url('assets/fonts/OpenSansHebrewCondensed-Bold.woff') format('woff'),
+  		url('assets/fonts/OpenSansHebrewCondensed-Bold.ttf') format('truetype');
+  	font-weight: bold;
+  	font-style: normal;
+  }
+
+  @font-face {
+  	font-family: 'Open Sans Condensed';
+  	src: url('assets/fonts/OpenSans-CondensedLight.eot');
+  	src: url('assets/fonts/OpenSans-CondensedLight.eot?#iefix') format('embedded-opentype'),
+  		url('assets/fonts/OpenSans-CondensedLight.woff') format('woff'),
+  		url('assets/fonts/OpenSans-CondensedLight.ttf') format('truetype');
+  	font-weight: 300;
+  	font-style: normal;
+  }
+
+  @font-face {
+  	font-family: 'Open Sans Hebrew Condensed';
+  	src: url('assets/fonts/OpenSansHebrewCondensed-Light.eot');
+  	src: url('assets/fonts/OpenSansHebrewCondensed-Light.eot?#iefix') format('embedded-opentype'),
+  		url('assets/fonts/OpenSansHebrewCondensed-Light.woff') format('woff'),
+  		url('assets/fonts/OpenSansHebrewCondensed-Light.ttf') format('truetype');
+  	font-weight: 300;
+  	font-style: normal;
+  }
+</style>
+
+<style lang="sss" rel="stylesheet/sass">
+  .container
+    display: flex
+    flex-flow: column nowrap
+    align-items: center
+
+    max-width: 1200px
+    padding: 0 30px
+    margin: 0 auto
+
+  *
+    box-sizing: border-box
+
+  html
+    background: #fff
+
+  body
+    -webkit-font-smoothing: antialiased
+    font-family: 'Open Sans Hebrew Condensed', sans-serif
+
+  textarea
+    line-height: 1.6
+    resize: vertical
+
+  a
+    outline: none
+    text-decoration: none
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button
+    -webkit-appearance: none
+    margin: 0
+
+  input[type=checkbox],
+  input[type=radio]
+    opacity: 0
+    position: absolute
+    z-index: 12
+    width: 18px
+    height: 18px
+    cursor: pointer
+
+  input[type=checkbox]:checked,
+  input[type=radio]:checked,
+  input[type=checkbox]:focus,
+  input[type=radio]:focus
+    outline: none !important
+</style>
+
+<style lang="sss" scoped rel="stylesheet/sass">
+  .watch-it-now
+    background-image: linear-gradient(-182deg, #f45232 0%, #e52816 100%)
+    padding: 22px 0
+    display: flex
+    flex-flow: column nowrap
+    align-items: center
+
+    .title
+      font-weight: bold
+      font-size: 20.79px
+      color: #FFFFFF
+      letter-spacing: 1.68px
+
+    .subtitle
+      margin-top: 1px
+      font-weight: 300
+      font-size: 16px
+      color: #FFFFFF
+      letter-spacing: 1.29px
+
+  .footer
+    background: #1B252A
+
+    .logos
+      padding: 52px 0 62px
+      display: flex
+      flex-flow: row nowrap
+      align-items: center
+      justify-content: center
+
+      .dark-factory
+        background: url("~assets/images/dark-factory.png") no-repeat center center / contain
+        width: 354px
+        height: 87px
+        margin-right: 98px
+
+      .itaca
+        background: url("~assets/images/itaca.png") no-repeat center center / contain
+        width: 91px
+        height: 87px
+        margin-right: 56px
+
+      .little-luca
+        background: url("~assets/images/little-luca.png") no-repeat center center / contain
+        width: 249px
+        height: 61px
+        margin-right: 79px
+
+      .globecom
+        background: url("~assets/images/globecom.png") no-repeat center center / contain
+        width: 91px
+        height: 87px
+
+    .nav
+      display: flex
+      flex-flow: row nowrap
+      justify-content: space-between
+      align-items: center
+      padding: 19px 42px
+
+    .nav-list
+      font-family: 'Open Sans', sans-serif
+      font-size: 16px
+      color: #7E8791
+      letter-spacing: 1.3px
+      display: flex
+      flex-flow: row nowrap
+      align-items: center
+      cursor: pointer
+
+      .separate
+        margin: 0 10px
+
+    .nav-copy
+      font-family: 'Open Sans', sans-serif
+      font-size: 10px
+      color: #5B6D82
+      letter-spacing: 0.81px
+
+
+</style>

@@ -1,48 +1,18 @@
-# Step 1: Install brunch & bower & npm
+# opening-night
 
-To build/serve our app you need install following packages:
+> A movie promo
 
-- Brunch
-- Bower
+## Build Setup
 
-
-### Installing Brunch
-`
-npm install -g brunch
-`
-### Installing Bower
-
-`npm install -g bower`
-
-# Step 2: Git clone
-To clone this repository you need:
-```
-git clone https://github.com/Shugar/estate estate
-```
-
-# Step 3: Install project plugins
-To install npm & bower plugins you need put in terminal following commands:
-```
-cd estate //our folder
+``` bash
+# install dependencies
 npm install
-bower install
+
+# serve with hot reload at localhost:8080
+npm run dev
+
+# build for production with minification
+npm run build
 ```
 
-# Step 4: Serve/Build app
-
-To serve your app you need go to your project folder and put in terminal following commands like
-```
-brunch w -s
-```
-
-To build your app to static files without `--watch` you need
-```
-brunch build
-```
-
-To build app to production version (minified code and etc) —
-```
-brunch build -p
-```
-
-# estate
+For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
