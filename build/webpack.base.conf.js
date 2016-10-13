@@ -47,7 +47,7 @@ module.exports = {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         loader: 'url',
         query: {
-          limit: 10000,
+          limit: 3000,
           name: 'assets/images/[name].[hash:7].[ext]'
         }
       },
@@ -55,7 +55,7 @@ module.exports = {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
         loader: 'url',
         query: {
-          limit: 100,
+          limit: 3000,
           name: 'assets/fonts/[name].[hash:7].[ext]'
         }
       }
@@ -70,13 +70,11 @@ module.exports = {
     })
   ],
   postcss: () => [
+    require('postcss-flexibility'),
+    require('postcss-flexbugs-fixes'),
     require('autoprefixer')(),
     require('postcss-import')(),
-    require('postcss-normalize')(),
-    require('precss'),
-    require('postcss-font-magician')({
-      hosted: 'assets/fonts'
-    })
+    require('precss')
   ],
   vue: {
     loaders: utils.cssLoaders(),

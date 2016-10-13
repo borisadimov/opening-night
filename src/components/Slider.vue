@@ -1,7 +1,10 @@
 <template lang="pug">
   .slider
-    transition
-      .quote.rob(v-if="slideNum == 1" key="1")
+    transition(
+      v-on:enter="enter"
+      v-on:enter-cancelled="enter"
+      )
+      .quote.rob(v-if="slideNum == 1" key="1" data="1")
         .bg
         .person
         .shade
@@ -21,7 +24,7 @@
             .icon
             | via Twitter
 
-      .quote.alona(v-if="slideNum == 2" key="2")
+      .quote.alona(v-if="slideNum == 2" key="2" data="2")
         .bg
         .person
         .shade
@@ -41,7 +44,7 @@
             .icon
             | via Twitter
 
-      .quote.topher(v-if="slideNum == 3" key="3")
+      .quote.topher(v-if="slideNum == 3" key="3" data="3")
         .bg
         .person
         .shade
@@ -68,6 +71,8 @@
 </template>
 
 <script>
+  import {TweenLite, Power0} from 'gsap';
+  
   const SLIDES = 3;
 
   export default {
@@ -75,18 +80,59 @@
 
     data: function () {
       return {
-        slideNum: 1
+        slideNum: 1,
+        
+        elmY: 0,
+        elmHeight: 0,
+        elmWidth: 0,
+        
+        container: null,
+        person: null,
+        content: null,
+        
+        entering: false
       };
+    },
+    
+    mounted: function () {
+      window.addEventListener('scroll', this.onScroll);
+      
+      this.person = document.querySelector('.slider .quote .person');
+      this.content = document.querySelector('.slider .quote .content');
+  
+      this.container = document.querySelector('.slider');
     },
 
     methods: {
+      onScroll: function () {
+        if (this.entering)
+          return;
+        
+        let dur = window.innerHeight * 1.5;
+        let progress = (window.pageYOffset - this.person.offsetTop) / dur;
+        if (progress >= 0 && progress <= 1) {
+          progress *= window.innerHeight / 100;
+          TweenLite.to(this.person, 0.1, {y: (progress * 10), z: '0.01', ease: Power0.easeInOut});
+          TweenLite.to(this.content, 0.1, {y: -(progress * 50), z: '0.01', ease: Power0.easeInOut});
+        }
+      },
+      
+      enter: function () {
+        this.person = document.querySelector(`.slider .quote[data="${this.slideNum}"] .person`);
+        this.content = document.querySelector(`.slider .quote[data="${this.slideNum}"] .content`);
+        this.entering = false;
+        this.onScroll();
+      },
+
       onClickLeft: function () {
+        this.entering = true;
         if (this.slideNum > 1)
           this.slideNum--;
         else
           this.slideNum = SLIDES;
       },
       onClickRight: function () {
+        this.entering = true;
         if (this.slideNum < SLIDES)
           this.slideNum++;
         else
@@ -152,34 +198,14 @@
         height: 100%
         position: absolute
         left: 0
-        top: 0
+        bottom: 0
         z-index: 10
 
       .content
-        position: relative
-        display: flex
-        flex-flow: column nowrap
-        justify-content: center
-        height: 100%
-        margin-left: 12%
+        position: absolute
+        left: 12%
+        bottom: 2vh
         z-index: 55
-
-        .quote-left, .quote-right
-          font-family: 'Helvetica', sans-serif
-          font-size: 500px
-          letter-spacing: 0.54px
-          line-height: 416px
-          z-index: -1
-          position: absolute
-
-        .quote-left
-          left: -16%
-          top: -20%
-
-        .quote-right
-          transform: rotate(180deg)
-          right: 0
-          top: -90%
 
         .in-touch
           opacity: 0.8
@@ -204,7 +230,24 @@
           letter-spacing: 2.23px
           line-height: 92.66px
           position: relative
-
+  
+          .quote-left, .quote-right
+            font-family: 'Helvetica', sans-serif
+            font-size: 500px
+            letter-spacing: 0.54px
+            line-height: 416px
+            z-index: -1
+            position: absolute
+    
+          .quote-left
+            left: -16%
+            top: -20%
+    
+          .quote-right
+            transform: rotate(180deg)
+            right: 0
+            top: -90%
+    
         .twitter
           margin-top: 22px
           opacity: 0.5
@@ -287,33 +330,41 @@
         .title
           width: 70%
 
-  .v-enter-active
+  .v-leave-active
     transition-duration: 1s
+  
+    .bg, .shade
+      transition-property: opacity
+      transition-duration: 1s
+  
+    .person, .content
+      transition-property: opacity
+      transition-duration: .5s
+  
+    .content
+      transition-property: opacity, transform
+
+  .v-enter-active
+    transition-duration: 2s
 
     .bg, .shade
       transition-property: opacity
-      transition-duration: .5s
+      transition-duration: 1s
 
     .person, .content
       transition-property: opacity
       transition-delay: .5s
       transition-duration: .5s
-
-  .v-leave-active
-    transition-duration: 1s
-
-    .bg, .shade
-      transition-property: opacity
-      transition-duration: .5s
-
-    .person, .content
-      transition-property: opacity
-      transition-duration: .5s
-      transition-timing-function: linear
+      
+    .content
+      transition-property: opacity, transform
+      transition-delay: .7s
 
   .v-leave-active, .v-enter
     .bg, .person, .shade, .content
       opacity: 0.01
+    .content
+      transform: translate3d(0, -50px, 0)
 
 
 </style>

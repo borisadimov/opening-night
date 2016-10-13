@@ -1,11 +1,17 @@
 <template lang="pug">
-  .characters
+  .characters(@mouseleave="onLeave")
     .spacer
-    .char-box.rob
+    .char-box(
+      v-for="(char, index) of chars"
+      v-bind:class="[char.name]"
+      v-bind:key="char.name"
+      @mouseenter="onEnterChar(index)"
+      )
       .char-inner
         .char-bg
         .char-player
           .char-video
+            .video-player(v-bind:id="'video-player-char-' + index")
           .char-socials
             | SHARE
             a.facebook(href="#")
@@ -13,169 +19,275 @@
             a.instagram(href="#")
 
         .char-list
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-
-    .char-box.anne
-      .char-inner
-        .char-bg
-        .char-player
-          .char-video
-          .char-socials
-            | SHARE
-            a.facebook(href="#")
-            a.twitter(href="#")
-            a.instagram(href="#")
-
-        .char-list
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-
-    .char-box.topher
-      .char-inner
-        .char-bg
-        .char-player
-          .char-video
-          .char-socials
-            | SHARE
-            a.facebook(href="#")
-            a.twitter(href="#")
-            a.instagram(href="#")
-
-        .char-list
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-
-    .char-box.alona
-      .char-inner
-        .char-bg
-        .char-player
-          .char-video
-          .char-socials
-            | SHARE
-            a.facebook(href="#")
-            a.twitter(href="#")
-            a.instagram(href="#")
-
-        .char-list
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-
-    .char-box.jc
-      .char-inner
-        .char-bg
-        .char-player
-          .char-video
-          .char-socials
-            | SHARE
-            a.facebook(href="#")
-            a.twitter(href="#")
-            a.instagram(href="#")
-
-        .char-list
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-
-    .char-box.taye
-      .char-inner
-        .char-bg
-        .char-player
-          .char-video
-          .char-socials
-            | SHARE
-            a.facebook(href="#")
-            a.twitter(href="#")
-            a.instagram(href="#")
-
-        .char-list
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-
-    .char-box.paul
-      .char-inner
-        .char-bg
-        .char-player
-          .char-video
-          .char-socials
-            | SHARE
-            a.facebook(href="#")
-            a.twitter(href="#")
-            a.instagram(href="#")
-
-        .char-list
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-
-    .char-box.lesli
-      .char-inner
-        .char-bg
-        .char-player
-          .char-video
-          .char-socials
-            | SHARE
-            a.facebook(href="#")
-            a.twitter(href="#")
-            a.instagram(href="#")
-
-        .char-list
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-          .char-video
-            .char-videoInner
-
-
+          .char-video(v-for="n in 4" @click="onClickPreview(n - 1)")
+            .char-videoInner(:style="{ backgroundImage: 'url(' + char.videos[n - 1].preview + ')' }")
 
 </template>
 
 <script>
+  import YouTubePlayer from 'youtube-player';
+  
+  
+  const TYPE_YOUTUBE = "TYPE_YOUTUBE";
+  const TYPE_GIPHY = "TYPE_GIPHY";
+  
+  const charactersData = [
+    {
+      name: 'rob',
+      videos: [
+        {
+          type: TYPE_YOUTUBE,
+          url: "ADPk5PpkjMg",
+          preview: "assets/images/video-1.png"
+        },
+        {
+          type: TYPE_GIPHY,
+          url: "//giphy.com/embed/l41YktuUJjzzOshri?hideSocial=true",
+          preview: "assets/images/video-2.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "I3W3mRs4ULQ",
+          preview: "assets/images/video-3.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "XVwqSlTFQq0",
+          preview: "assets/images/video-4.png"
+        }
+      ]
+    },
+    {
+      name: 'anne',
+      videos: [
+        {
+          type: TYPE_YOUTUBE,
+          url: "ADPk5PpkjMg",
+          preview: "assets/images/video-1.png"
+        },
+        {
+          type: TYPE_GIPHY,
+          url: "//giphy.com/embed/l41YktuUJjzzOshri?hideSocial=true",
+          preview: "assets/images/video-2.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "I3W3mRs4ULQ",
+          preview: "assets/images/video-3.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "XVwqSlTFQq0",
+          preview: "assets/images/video-4.png"
+        }
+      ]
+    },
+    {
+      name: 'topher',
+      videos: [
+        {
+          type: TYPE_YOUTUBE,
+          url: "ADPk5PpkjMg",
+          preview: "assets/images/video-1.png"
+        },
+        {
+          type: TYPE_GIPHY,
+          url: "//giphy.com/embed/l41YktuUJjzzOshri?hideSocial=true",
+          preview: "assets/images/video-2.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "I3W3mRs4ULQ",
+          preview: "assets/images/video-3.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "XVwqSlTFQq0",
+          preview: "assets/images/video-4.png"
+        }
+      ]
+    },
+    {
+      name: 'alona',
+      videos: [
+        {
+          type: TYPE_YOUTUBE,
+          url: "ADPk5PpkjMg",
+          preview: "assets/images/video-1.png"
+        },
+        {
+          type: TYPE_GIPHY,
+          url: "//giphy.com/embed/l41YktuUJjzzOshri?hideSocial=true",
+          preview: "assets/images/video-2.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "I3W3mRs4ULQ",
+          preview: "assets/images/video-3.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "XVwqSlTFQq0",
+          preview: "assets/images/video-4.png"
+        }
+      ]
+    },
+    {
+      name: 'jc',
+      videos: [
+        {
+          type: TYPE_YOUTUBE,
+          url: "ADPk5PpkjMg",
+          preview: "assets/images/video-1.png"
+        },
+        {
+          type: TYPE_GIPHY,
+          url: "//giphy.com/embed/l41YktuUJjzzOshri?hideSocial=true",
+          preview: "assets/images/video-2.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "I3W3mRs4ULQ",
+          preview: "assets/images/video-3.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "XVwqSlTFQq0",
+          preview: "assets/images/video-4.png"
+        }
+      ]
+    },
+    {
+      name: 'taye',
+      videos: [
+        {
+          type: TYPE_YOUTUBE,
+          url: "ADPk5PpkjMg",
+          preview: "assets/images/video-1.png"
+        },
+        {
+          type: TYPE_GIPHY,
+          url: "//giphy.com/embed/l41YktuUJjzzOshri?hideSocial=true",
+          preview: "assets/images/video-2.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "I3W3mRs4ULQ",
+          preview: "assets/images/video-3.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "XVwqSlTFQq0",
+          preview: "assets/images/video-4.png"
+        }
+      ]
+    },
+    {
+      name: 'paul',
+      videos: [
+        {
+          type: TYPE_YOUTUBE,
+          url: "ADPk5PpkjMg",
+          preview: "assets/images/video-1.png"
+        },
+        {
+          type: TYPE_GIPHY,
+          url: "//giphy.com/embed/l41YktuUJjzzOshri?hideSocial=true",
+          preview: "assets/images/video-2.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "I3W3mRs4ULQ",
+          preview: "assets/images/video-3.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "XVwqSlTFQq0",
+          preview: "assets/images/video-4.png"
+        }
+      ]
+    },
+    {
+      name: 'lesli',
+      videos: [
+        {
+          type: TYPE_YOUTUBE,
+          url: "ADPk5PpkjMg",
+          preview: "assets/images/video-1.png"
+        },
+        {
+          type: TYPE_GIPHY,
+          url: "//giphy.com/embed/l41YktuUJjzzOshri?hideSocial=true",
+          preview: "assets/images/video-2.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "I3W3mRs4ULQ",
+          preview: "assets/images/video-3.png"
+        },
+        {
+          type: TYPE_YOUTUBE,
+          url: "XVwqSlTFQq0",
+          preview: "assets/images/video-4.png"
+        }
+      ]
+    }
+  ];
+  
   export default {
-    name: "CharactersComponent"
+    name: "CharactersComponent",
+    
+    data: function () {
+      return {
+        chars: charactersData,
+        currentChar: -1,
+        currentVideo: 0,
+        player: null,
+        players: []
+      }
+    },
+    
+    mounted: function () {
+    },
+    
+    methods: {
+      onClickPreview: function (num) {
+        if (this.currentVideo != num) {
+          this.currentVideo = num;
+          let video = this.chars[this.currentChar].videos[num];
+          if (video.type == TYPE_YOUTUBE)
+            this.player.loadVideoById(video.url);
+        }
+      },
+  
+      onEnterChar: function (i) {
+        if (i != this.currentChar) {
+          this.currentChar = i;
+          this.currentVideo = 0;
+  
+          if (this.player)
+            this.player.destroy();
+          
+          let h = Math.round(window.innerWidth / 100 * 10.2);
+          let w = Math.round(h * 16 / 9);
+          
+          let video = this.chars[i].videos[0];
+          this.player = new YouTubePlayer('video-player-char-' + i, {
+            playerVars: { 'autoplay': 1, 'controls': 0, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'disablekb': 1},
+            height: h.toString(),
+            width: w.toString(),
+            videoId: video.url
+          });
+        }
+      },
+      
+      onLeave: function () {
+        if (this.player)
+          this.player.destroy();
+        this.currentChar = -1;
+        this.currentVideo = 0;
+      }
+    }
   }
 </script>
 
@@ -185,7 +297,7 @@
     .char-bg
       position: absolute
       left: 15.5vw
-      bottom: 0;
+      bottom: 0
       width: 32.6vw
       height: 100%
       transform: skew(-18.5deg)
@@ -193,12 +305,12 @@
       z-index: 4
       opacity: 1
       transition: opacity 0.3s ease 0.4s
-      will-change: opacity
+      will-change: opacity, transform
 
     .char-player
-      position: absolute;
+      position: absolute
       left: 20vw
-      overflow: hidden;
+      overflow: hidden
 
       display: flex
       flex-flow: row nowrap
@@ -207,9 +319,16 @@
       .char-video
         height: 10.2vw
         width: 23.5vw
-        background: url("~assets/images/large-video.png") no-repeat center center / cover
-        margin-top: 1vw;
-
+        margin-top: 1vw
+        position: relative
+        
+        .video-player
+          position: absolute
+          top: 0
+          left: 0
+          width: 100%
+          height: 100%
+          
       .char-socials
         margin-top: 1vw
         margin-left: 1vw
@@ -246,9 +365,9 @@
 
     .char-list
       position: absolute
-      left: 13.4vw
+      left: 13.3vw
       bottom: 0.8vw
-      width: 32.6vw
+      width: 32.7vw
       height: 5vw
       transform: skew(-18.5deg)
       padding-left: 0.9vw
@@ -265,23 +384,14 @@
         &:last-child
           margin-right: 0
 
-        &:nth-child(1) .char-videoInner
-          background-image: url("~assets/images/shot-1.png")
-        &:nth-child(2) .char-videoInner
-          background-image: url("~assets/images/shot-2.png")
-        &:nth-child(3) .char-videoInner
-          background-image: url("~assets/images/shot-3.png")
-        &:nth-child(4) .char-videoInner
-          background-image: url("~assets/images/shot-4.png")
-
         .char-videoInner
-          position: absolute;
-          left: -15%;
-          height: 100%;
-          width: 130%;
+          position: absolute
+          left: -15%
+          height: 100%
+          width: 130%
           background: #FFF no-repeat left center / cover
 
-          transform: skew(18.5deg);
+          transform: skew(18.5deg)
 
         &:hover
           outline: 2px #fff solid
@@ -321,6 +431,7 @@
       z-index: 9
       &:hover ~ *
         transform: skew(-18.5deg) !important
+        
     .char-box
       position: absolute
       bottom: 0
@@ -330,7 +441,7 @@
       width: 45vw
       max-width: 12.3vw
       overflow: hidden
-      cursor: pointer;
+      cursor: pointer
       z-index: 10
       transition: max-width .3s ease-in-out, transform .3s ease-in-out .3s, z-index 0s ease-in-out .3s
       &:hover
@@ -338,10 +449,12 @@
         z-index: 100
         transition: max-width .3s ease-in-out .3s, transform .3s ease-in-out .3s, z-index 0s ease-in-out 0s
 
-        box-shadow: 0px 2px 13px 0px rgba(0,0,0,0.80), inset 0px 51px 52px 0px #000000;
+        box-shadow: 0px 2px 13px 0px rgba(0,0,0,0.80), inset 0px 51px 52px 0px #000000
 
         .char-bg
           opacity: 0
+          transform: translateX(-100%)
+          transition: opacity 0.3s ease 0.4s, transform 0s ease 0.7s
 
       .char-inner
         position: absolute
