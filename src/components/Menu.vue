@@ -7,49 +7,52 @@
       a.menu-item.menu-active(href="#") Reviews
       a.menu-item(href="#") Clips
       a.menu-item(href="#") Contest
-      a.menu-item.watch(href="#") Watch it now
+    .watch(@click="onClickWatch") Watch it now
+    .burger
 </template>
 
 <script>
   export default {
     name: "MenuComponent",
+    
     data: function() {
       return {
         scrolled: false
       }
     },
+    
     methods: {
       handleScroll () {
         this.scrolled = window.scrollY > window.innerHeight;
+      },
+  
+      onClickWatch: function () {
+        this.$emit('watch');
       }
     },
+    
     mounted: function() {
-      var raf = window.requestAnimationFrame ||
-          window.webkitRequestAnimationFrame ||
-          window.mozRequestAnimationFrame ||
-          window.msRequestAnimationFrame ||
-          window.oRequestAnimationFrame;
-          
-      var lastScrollTop = window.scrollY;
-
-       var loop = () => {
-          var scrollTop = window.scrollY;
-          if (lastScrollTop === scrollTop) {
-              raf(loop);
-              return;
-          } else {
-              lastScrollTop = scrollTop;
-
-              // fire scroll function if scrolls vertically
-              this.handleScroll();
-              raf(loop);
-          }
-      }
-
-      if (raf) {
+      let raf =
+        window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        window.oRequestAnimationFrame;
+  
+      let lastScrollTop = window.scrollY;
+  
+      let loop = () => {
+        if (lastScrollTop != window.scrollY) {
+          lastScrollTop = window.scrollY;
+          // fire scroll function if scrolls vertically
+          this.handleScroll();
+        }
+        raf(loop);
+      };
+  
+      if (raf)
         loop();
-      }
-
+  
       // window.addEventListener('scroll', this.handleScroll);
     }
   }
@@ -84,6 +87,7 @@
 
     &-logo
       position: relative
+      width: 119px
 
       img
         height: 71px
@@ -94,7 +98,9 @@
     &-list
       display: flex
       flex-flow: row nowrap
+      justify-content: flex-end
       align-items: center
+      flex: 1
 
     &-item
       display: block
@@ -108,7 +114,7 @@
       color: #FFFFFF
       font-weight: bold
 
-    &-item.watch
+    .watch
       margin-left: 38px
       font-family: 'Open Sans Hebrew Condensed', sans-serif
       background-image: linear-gradient(-182deg, #f45232 0%, #e52816 100%)
@@ -123,4 +129,69 @@
       text-align: center
       line-height: 35px
       cursor: pointer
+</style>
+
+<style scoped lang="scss">
+  @media (max-width: 768px) {
+    .menu {
+      &-list {
+        padding: 0 8%;
+        flex: 1;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      &-item {
+        padding: 0;
+      }
+
+      .watch {
+        margin-left: 0;
+        font-size: 16px;
+      }
+    }
+  }
+
+  @media (max-width: 688px) {
+    .menu {
+      background: transparent;
+      box-shadow: none;
+
+      .burger {
+        background: url('~assets/images/burger.svg') no-repeat center center / contain;
+        height: 28px;
+        width: 36px;
+
+        position: absolute;
+        right: 22px;
+        top: 20px;
+
+        z-index: 5;
+      }
+
+      .watch,
+      &-logo {
+        display: none;
+      }
+
+      &-list {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: #000;
+        flex-flow: column nowrap;
+        justify-content: center;
+      }
+
+      &-item {
+        font-size: 36px;
+        margin-top: 20px;
+      }
+    }
+  }
 </style>

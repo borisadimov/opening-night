@@ -20,8 +20,11 @@
             a.instagram(href="#")
 
         .char-list
-          .char-video(v-for="n in 4" @click="onClickPreview(n - 1)")
-            .char-videoInner(:style="{ backgroundImage: 'url(' + char.videos[n - 1].preview + ')' }")
+          .char-video(
+            v-for="n in 4" @click="onClickPreview(n - 1)"
+            v-bind:class="{'char-video-selected': n - 1 == currentVideo}"
+            )
+            .char-videoInner(v-bind:style="{ backgroundImage: 'url(' + char.videos[n - 1].preview + ')' }")
 
 </template>
 
@@ -249,7 +252,8 @@
         player: null,
         players: [],
 
-        playerActive: false
+        playerActive: false,
+        timeout: 0
       }
     },
 
@@ -272,14 +276,17 @@
           if (this.player && this.playerActive) {
             this.player.loadVideoById(videoData.id);
           } else {
-            this.player = new YouTubePlayer(playerId, {
-              playerVars: { 'autoplay': 1, 'controls': 0, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'disablekb': 1},
-              height: h.toString(),
-              width: w.toString(),
-              //videoId: videoData.id
-            });
-            this.playerActive = true;
-            setTimeout(() => this.player.loadVideoById(videoData.id), 600);
+            if (this.timeout)
+              clearTimeout(this.timeout);
+            this.timeout = setTimeout(() => {
+              this.player = new YouTubePlayer(playerId, {
+                playerVars: { 'autoplay': 1, 'controls': 0, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'disablekb': 1},
+                height: h.toString(),
+                width: w.toString(),
+                videoId: videoData.id
+              });
+              this.playerActive = true;
+            }, 400);
           }
 
           giphyElm.style.visibility = 'hidden';
@@ -320,6 +327,8 @@
       },
 
       onLeave: function () {
+        if (this.timeout)
+          clearTimeout(this.timeout);
         if (this.playerActive)
           this.player.destroy();
         this.playerActive = false;
@@ -433,7 +442,7 @@
 
           transform: skew(18.5deg)
 
-        &:hover
+        &:hover, &-selected
           outline: 2px #fff solid
 
 
@@ -622,4 +631,62 @@
         &:hover
           transform: skew(-18.5deg) scale(1.1) translate3D(-35vw,0,0)
 
+</style>
+<style lang="scss" scoped rel="stylesheet/sсss">
+  @media (max-width: 510px) {
+    .characters {
+      height: 73vw;
+
+      .char-box {
+        height: 36.5vw;
+        max-width: 24.6vw;
+
+        .char-bg,
+        .char-list,
+        .char-player {
+          display: none;
+        }
+
+        .char-inner {
+          height: 36.5vw;
+        }
+
+        &.rob {
+          top: 0;
+          left: -2vw;
+        }
+
+        &.anne {
+          left: 0;
+        }
+
+        &.topher {
+          top: 0;
+          left: 20.6vw;
+        }
+
+        &.alona {
+          left: 20.6vw;
+        }
+
+        &.jc {
+          top: 0;
+          left: 44.8vw;
+        }
+
+        &.taye {
+          left: 44.8vw;
+        }
+
+        &.paul {
+          top: 0;
+          left: 69.2vw;
+        }
+
+        &.lesli {
+          left: 69.2vw;
+        }
+      }
+    }
+  }
 </style>

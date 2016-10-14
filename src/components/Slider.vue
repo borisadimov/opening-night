@@ -61,7 +61,7 @@
             | In Touch Weekly
 
           .title
-            | “NEVER ENDING WRECK OF HILARIOUSNESS”
+            | “NEVER ENDING WRECK OF <span>HILARIOUS</span><span>NESS”</span>
 
 
           a.twitter(href="http://twitter.com")
@@ -105,7 +105,7 @@
       this.person = document.querySelector('.slider .quote .person');
       this.content = document.querySelector('.slider .quote .content');
       this.quotes = document.querySelector('.slider .quote .quotes');
-      
+
       this.container = document.querySelector('.slider');
     },
 
@@ -114,13 +114,16 @@
         if (this.entering)
           return;
 
-        let dur = window.innerHeight * 1.5;
-        let progress = (window.pageYOffset - this.person.offsetTop) / dur;
+        let ch = this.content.clientHeight;
+
+        let wh = window.innerHeight;
+        let dur = 2 * wh;
+        let offset = 1 * wh;
+        let progress = (window.pageYOffset + offset - this.container.offsetTop) / dur;
         if (progress >= 0 && progress <= 1) {
-          progress *= window.innerHeight / 100;
-          TweenLite.to(this.person, 0.1, {y: (progress * 10), z: '0.01', ease: Power0.easeInOut});
-          TweenLite.to(this.content, 0.1, {y: -(progress * 50), z: '0.01', ease: Power0.easeInOut});
-          TweenLite.to(this.quotes, 0.1, {y: -(progress * 20), z: '0.01', ease: Power0.easeInOut});
+          TweenLite.to(this.person,   0.1,  {y: (progress * wh / 5),     z: '0.01', ease: Power0.easeInOut});
+          TweenLite.to(this.content,  0.1,  {y: - (progress * (wh - ch)), z: '0.01', ease: Power0.easeInOut});
+          TweenLite.to(this.quotes,   0.1,  {y: - (progress * wh / 5),   z: '0.01', ease: Power0.easeInOut});
         }
       },
 
@@ -234,7 +237,7 @@
       .content
         position: absolute
         left: 12%
-        bottom: 2vh
+        bottom: 5vh
         z-index: 55
 
         .in-touch
@@ -380,4 +383,77 @@
       transform: translate3d(0, -50px, 0)
 
 
+</style>
+<style lang="scss" scoped rel="stylesheet/scss">
+  @media (max-width: 768px) {
+    .slider {
+
+      .quote .person {
+        left: initial;
+        right: -20%;
+        bottom: 0;
+      }
+
+      .quotes {
+        display: none;
+      }
+
+      .quote {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .quote .content {
+        width: 100%;
+        left: 0;
+        padding: 0 6%;
+        /*//position: static;*/
+        bottom: 1vh;
+      }
+
+      .quote .content .title {
+        width: 100%;
+        font-size: 70px;
+        color: #FFFFFF;
+        letter-spacing: 1.89px;
+        line-height: 67.66px;
+      }
+
+
+      .arrow-left {
+        margin-right: 10px;
+      }
+
+      .arrow-right {
+        margin-left: 10px;
+      }
+
+      .arrow-left,
+      .arrow-right {
+        height: 22px;
+        width: 18px;
+      }
+    }
+  }
+
+  @media (max-width: 525px) {
+    .slider {
+      .person {
+        display: none;
+      }
+
+      .arrows {
+        bottom: 20%;
+        left: initial;
+        right: 12%;
+      }
+
+      .quote .content .title {
+        font-size: 60px;
+        span { display: block; }
+      }
+    }
+  }
 </style>

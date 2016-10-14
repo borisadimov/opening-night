@@ -5,7 +5,7 @@
 
     .watch
       .watch-button
-        .watch-now
+        .watch-now(@click="onClickWatch")
           | Watch It Now
         .watch-starting
           | starting at
@@ -36,17 +36,49 @@
       CharactersComponent
     },
 
+    data: function () {
+      return {
+        karaoke: null,
+        background: null,
+        logo: null
+      };
+    },
+
+    mounted: function () {
+      window.addEventListener('scroll', this.onScroll);
+
+      this.karaoke = document.querySelector('.header .smule');
+      this.background = document.querySelector('.header .bg');
+      this.logo = document.querySelector('.header .logo');
+
+      this.container = document.querySelector('.slider');
+    },
+
     methods: {
+      onClickWatch: function () {
+        this.$emit('watch');
+      },
+
       onClickScroll: function () {
-        TweenLite.to(window, .5, {scrollTo: document.documentElement.clientHeight+5});
+        TweenLite.to(window, .5, {scrollTo: document.documentElement.clientHeight + 5});
+      },
+
+      onScroll: function () {
+        let dur = window.innerHeight;
+        let progress = window.pageYOffset / dur;
+        if (progress >= 0 && progress <= 1) {
+          progress *= window.innerHeight / 100;
+          TweenLite.to(this.background, 0.2, {y: (progress * 10), z: '0.01', ease: Power0.easeInOut});
+          TweenLite.to(this.karaoke, 0.2, {y: (progress * 50), z: '0.01', ease: Power0.easeInOut});
+          TweenLite.to(this.logo, 0.2, {y: -(progress * 20), z: '0.01', ease: Power0.easeInOut});
+        }
       }
     }
   }
 </script>
 
 <style lang="sss" scoped rel="stylesheet/sass">
-  .header    
-    height: 100%
+  .header
     height: 100vh
     overflow: hidden
     display: flex
@@ -61,7 +93,6 @@
       bottom: 0
       z-index: -1
       background: url("~assets/images/head-bg.jpg") no-repeat center center / cover
-      background-attachment: fixed
       transform: translate3d(0,0,0)
 
     .logo
@@ -154,5 +185,56 @@
     .arrow:hover
       filter: drop-shadow(0px 0px 2px #ffffff)
 
+</style>
 
+<style scoped lang="scss" rel="stylesheet/scss">
+
+  @media (max-width: 1140px) {
+    .header {
+      .smule {
+        top: 70px;
+        right: 30px;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .header {
+      height: 830px;
+      .smule {
+        display: none;
+      }
+    }
+  }
+
+  @media (max-width: 688px) {
+    .header {
+      .logo {
+        width: 359px;
+        height: 207px;
+      }
+
+      .watch {
+        margin-top: -10px;
+        flex-flow: column nowrap;
+      }
+
+      .watch-button {
+        margin: 0;
+      }
+
+      .watch-trailer {
+        border: none;
+        background: none;
+        box-shadow: none;
+        margin-top: 20px;
+      }
+    }
+  }
+
+  @media (max-width: 425px) {
+    .header {
+      height: 740px;
+    }
+  }
 </style>

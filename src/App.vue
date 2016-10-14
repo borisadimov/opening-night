@@ -1,14 +1,26 @@
 <template lang="pug">
   .app
-    menu-component
+    preloader-component
 
-    header-component
+    purchase-component(v-on:close="setWatch(false)" v-if="watchOpened")
+
+    menu-component(v-on:watch="setWatch(true)")
+
+    header-component(v-on:watch="setWatch(true)")
 
     slider-component
 
+    .watch-it-now.watch-it-now-mobile(@click="setWatch(true)")
+      .title
+        | Watch It Now
+      .subtitle
+        | starting at $2.99 on Amazon Demand
+
     video-component
 
-    a.watch-it-now(href="/")
+    download-component
+
+    .watch-it-now(@click="setWatch(true)")
       .title
         | Watch It Now
       .subtitle
@@ -39,13 +51,31 @@ import HeaderComponent from 'components/Header';
 import SliderComponent from 'components/Slider';
 import VideoComponent from 'components/Video';
 import MenuComponent from 'components/Menu';
+import PreloaderComponent from 'components/Preloader';
+import PurchaseComponent from 'components/Purchase';
+import DownloadComponent from 'components/Download';
 
 export default {
   components: {
     HeaderComponent,
     SliderComponent,
     VideoComponent,
-    MenuComponent
+    MenuComponent,
+    PreloaderComponent,
+    PurchaseComponent,
+    DownloadComponent
+  },
+
+  data: function() {
+    return {
+      watchOpened: false
+    }
+  },
+
+  methods: {
+    setWatch: function (open) {
+      this.watchOpened = open;
+    }
   }
 }
 </script>
@@ -156,12 +186,17 @@ export default {
 </style>
 
 <style lang="sss" scoped rel="stylesheet/sass">
+
   .watch-it-now
     background-image: linear-gradient(-182deg, #f45232 0%, #e52816 100%)
     padding: 22px 0
     display: flex
     flex-flow: column nowrap
     align-items: center
+    cursor: pointer
+
+    &-mobile
+      display: none
 
     .title
       font-weight: bold
@@ -180,7 +215,7 @@ export default {
     background: #1B252A
 
     .logos
-      padding: 52px 0 62px
+      padding: 52px 42px 62px
       display: flex
       flex-flow: row nowrap
       align-items: center
@@ -235,5 +270,76 @@ export default {
       color: #5B6D82
       letter-spacing: 0.81px
 
+
+</style>
+
+
+<style scoped lang="scss">
+  @media (max-width: 699px) {
+    .watch-it-now-mobile {
+      display: flex;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .watch-it-now {
+      padding: 12px 0;
+
+      .title {
+        font-size: 20.79px;
+        color: #FFFFFF;
+        letter-spacing: 1.68px;
+      }
+
+      .subtitle {
+        font-size: 12px;
+        color: #FFFFFF;
+        letter-spacing: 0.97px;
+      }
+    }
+
+    .footer {
+
+      .logos {
+        padding: 46px 30px 29px;
+
+        .dark-factory,
+        .itaca,
+        .little-luca {
+          margin-right: 5%;
+        }
+      }
+
+      .nav {
+        flex-flow: column nowrap;
+        padding-top: 0;
+        padding-bottom: 70px;
+
+        &-list {
+          font-size: 12px;
+          color: #7E8791;
+          letter-spacing: 0.97px;
+        }
+
+        &-copy {
+          margin-top: 10px;
+          font-size: 10px;
+          letter-spacing: 0.81px;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 340px) {
+    .footer {
+      .nav {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      .separate {
+        margin: 0 5px;
+      }
+    }
+  }
 
 </style>
