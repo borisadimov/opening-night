@@ -1,12 +1,14 @@
 <template lang="pug">
-  .app
+  #app
     preloader-component
+
+    characters-popup-component(v-on:close="setCharMobile(false)" v-if="charMobileOpened" v-bind:charData="charMobileData")
 
     purchase-component(v-on:close="setWatch(false)" v-if="watchOpened")
 
-    menu-component(v-on:watch="setWatch(true)")
+    menu-component(v-on:watch="setWatch(true)" v-on:nav="onScroll" v-bind:currentSection="currentSection")
 
-    header-component(v-on:watch="setWatch(true)")
+    header-component(v-on:watch="setWatch(true)" v-on:showCharMobile="setCharMobile($event)")
 
     slider-component
 
@@ -54,6 +56,9 @@ import MenuComponent from 'components/Menu';
 import PreloaderComponent from 'components/Preloader';
 import PurchaseComponent from 'components/Purchase';
 import DownloadComponent from 'components/Download';
+import CharactersPopupComponent from 'components/CharactersPopup';
+import store from 'store/Store';
+
 
 export default {
   components: {
@@ -63,18 +68,49 @@ export default {
     MenuComponent,
     PreloaderComponent,
     PurchaseComponent,
-    DownloadComponent
+    DownloadComponent,
+    CharactersPopupComponent
   },
 
   data: function() {
     return {
-      watchOpened: false
+      watchOpened: false,
+      charMobileOpened: false,
+      charMobileData: null,
+      
+      currentSection: null
     }
   },
 
+  mounted: function () {
+    window.addEventListener('scroll', this.onScroll);
+  
+    store().onReady();
+    this.currentSection = store().SECTION_CAST;
+  },
+  
   methods: {
+    onScroll: function () {
+      if (this.watchOpened || this.charMobileOpened)
+        return;
+      
+      if (window.pageYOffset > store().sectionContest.offsetTop - window.innerHeight)
+        this.currentSection = store().SECTION_CONTEST;
+      else if (window.pageYOffset > store().sectionClips.offsetTop - window.innerHeight)
+        this.currentSection = store().SECTION_CLIPS;
+      else if (window.pageYOffset > store().sectionReviews.offsetTop - window.innerHeight)
+        this.currentSection = store().SECTION_REVIEWS;
+      else
+        this.currentSection = store().SECTION_CAST;
+    },
+    
     setWatch: function (open) {
       this.watchOpened = open;
+    },
+    
+    setCharMobile: function (data) {
+      this.charMobileOpened = !!data;
+      this.charMobileData = data;
     }
   }
 }

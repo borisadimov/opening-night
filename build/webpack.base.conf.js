@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const utils = require('./utils');
 const projectRoot = path.resolve(__dirname, '../');
@@ -62,13 +61,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new webpack.optimize.OccurenceOrderPlugin(),
-    new HtmlWebpackPlugin({
-      template: 'src/index.pug',
-      inject: true,
-      filename: 'index.html',
-      chunksSortMode: 'dependency'
-    })
+    new webpack.optimize.OccurenceOrderPlugin()
   ],
   postcss: () => [
     require('postcss-flexibility'),

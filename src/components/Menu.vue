@@ -2,35 +2,65 @@
   .menu(v-bind:class="{ 'showedMenu': this.scrolled }")
     a.menu-logo(href="#")
       img(src="~assets/images/logo-small.png")
-    .menu-list
-      a.menu-item(href="#") Cast
-      a.menu-item.menu-active(href="#") Reviews
-      a.menu-item(href="#") Clips
-      a.menu-item(href="#") Contest
+    .menu-list(v-bind:class="{ 'showedList': this.showMenu }")
+      .menu-item(@click="onClickItem(SECTION_CAST)" v-bind:class="{'menu-active': currentSection == SECTION_CAST}") Cast
+      .menu-item(@click="onClickItem(SECTION_REVIEWS)" v-bind:class="{'menu-active': currentSection == SECTION_REVIEWS}") Reviews
+      .menu-item(@click="onClickItem(SECTION_CLIPS)" v-bind:class="{'menu-active': currentSection == SECTION_CLIPS}") Clips
+      .menu-item(@click="onClickItem(SECTION_CONTEST)" v-bind:class="{'menu-active': currentSection == SECTION_CONTEST}") Contest
     .watch(@click="onClickWatch") Watch it now
-    .burger
+    .burger(@click="onClickBurger")
 </template>
 
 <script>
+  import {TweenLite} from 'gsap';
+  import ScrollToPlugin from 'gsap/src/uncompressed/plugins/ScrollToPlugin';
+  
+  import store from 'store/Store';
+
+
   export default {
     name: "MenuComponent",
-    
+
+    props: ['currentSection'],
+
     data: function() {
       return {
-        scrolled: false
+        scrolled: false,
+        showMenu: false,
+
+        "SECTION_CAST":     store().SECTION_CAST,
+        "SECTION_REVIEWS":  store().SECTION_REVIEWS,
+        "SECTION_CLIPS":    store().SECTION_CLIPS,
+        "SECTION_CONTEST":  store().SECTION_CONTEST
       }
     },
-    
+
     methods: {
       handleScroll () {
         this.scrolled = window.scrollY > window.innerHeight;
       },
-  
+
       onClickWatch: function () {
         this.$emit('watch');
+      },
+
+      onClickBurger: function () {
+        this.showMenu = !this.showMenu;
+      },
+      
+      onClickItem: function (item) {
+        let pointTo = 0;
+        switch (item) {
+          case this.SECTION_CAST: pointTo = 0; break;
+          case this.SECTION_REVIEWS: pointTo = store().sectionReviews.offsetTop; break;
+          case this.SECTION_CLIPS: pointTo = store().sectionClips.offsetTop; break;
+          case this.SECTION_CONTEST: pointTo = store().sectionContest.offsetTop; break;
+        }
+        TweenLite.to(window, .5, {scrollTo: pointTo + 5});
+        this.$emit('nav');
       }
     },
-    
+
     mounted: function() {
       let raf =
         window.requestAnimationFrame ||
@@ -38,9 +68,9 @@
         window.mozRequestAnimationFrame ||
         window.msRequestAnimationFrame ||
         window.oRequestAnimationFrame;
-  
+
       let lastScrollTop = window.scrollY;
-  
+
       let loop = () => {
         if (lastScrollTop != window.scrollY) {
           lastScrollTop = window.scrollY;
@@ -49,10 +79,10 @@
         }
         raf(loop);
       };
-  
+
       if (raf)
         loop();
-  
+
       // window.addEventListener('scroll', this.handleScroll);
     }
   }
@@ -102,6 +132,9 @@
       align-items: center
       flex: 1
 
+      &.showedList
+        display: flex
+
     &-item
       display: block
       font-family: 'Open Sans', sans-serif
@@ -109,6 +142,7 @@
       line-height: 60px
       text-transform: uppercase
       padding: 0 20px
+      cursor: pointer
 
     &-item.menu-active
       color: #FFFFFF
@@ -169,6 +203,8 @@
         top: 20px;
 
         z-index: 5;
+
+        cursor: pointer;
       }
 
       .watch,

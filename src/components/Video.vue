@@ -26,17 +26,23 @@
 
     .video-mobile
       .group-container
-        .item(
-          v-for="(item, index) of itemsMobile"
-          v-bind:key="item.url"
-          )
-          .img(:style="{ backgroundImage: 'url(' + item.preview + ')' }")
-          .text
-            | {{item.text}}
-          .bg
-          .play
+        transition-group.group(name="mobile" tag="div")
+          .item(
+            v-for="(item, index) of itemsMobile"
+            v-bind:key="item.id"
+            @click="onClickItemMobile(index)"
+            )
+            .item-inner
+              .img(:style="{ backgroundImage: 'url(' + item.preview + ')' }" v-show="currentItem != item")
+              .text
+                | {{item.text}}
+              .bg
+              .play
+              .video-player
+                .youtube(v-bind:id="'mobile-video-' + index")
+                video.giphy(autoplay loop v-bind:id="'mobile-giphy-' + index" v-show="currentItem == item")
 
-    .more-clips
+    .more-clips(@click="onClickMore")
       | MORE CLIPS
 </template>
 
@@ -45,10 +51,14 @@
   import 'gsap/src/uncompressed/plugins/ScrollToPlugin';
   import YouTubePlayer from 'youtube-player';
   import debounce from 'throttle-debounce/debounce';
+  
+  import store from 'store/Store';
 
 
   const TYPE_YOUTUBE = "TYPE_YOUTUBE";
   const TYPE_GIPHY = "TYPE_GIPHY";
+  
+  const MOBILE_ON_PAGE = 3;
 
   const items = [
     {
@@ -83,7 +93,7 @@
     },
     {
       type: TYPE_YOUTUBE,
-      id: "XVwqSlTFQq0",
+      id: "ElvLZMsYXlo",
       preview: "assets/images/video-4.png",
       text: "WORDS, SAY WORDS"
     }
@@ -94,9 +104,12 @@
 
     data: function () {
       return {
-        currentItem: items[0],
+        currentItem: null,
         items: items,
-        itemsMobile: items.slice(0, 3),
+        
+        itemsMobile: items.slice(0, MOBILE_ON_PAGE),
+        mobilePages: Math.ceil(items.length / MOBILE_ON_PAGE),
+        mobilePage: 0,
 
         itemGroup: null,
         itemElms: null,
@@ -107,15 +120,19 @@
     },
 
     mounted: function () {
-      window.addEventListener('resize', this.onResize);
-
-      this.itemGroup = document.querySelector('.video .video-list .group');
-      this.itemElms = document.querySelectorAll('.video .video-list .item');
-
-      this.giphyElm = document.querySelector(`.video .video-desktop .giphy`);
-
-      this.setVideo();
-      this.onResize();
+      if (!store().isMobile) {
+        window.addEventListener('resize', this.onResize);
+        
+        this.currentItem = items[0];
+  
+        this.itemGroup = document.querySelector('.video .video-list .group');
+        this.itemElms = document.querySelectorAll('.video .video-list .item');
+  
+        this.giphyElm = document.querySelector(`.video .video-desktop .giphy`);
+  
+        this.setVideo();
+        this.onResize();
+      }
     },
 
     methods: {
@@ -138,7 +155,9 @@
         } else if (this.currentItem.type == TYPE_GIPHY) {
           this.giphyElm.src = (document.location.protocol == "https:" ? "https://" : "http://") +
             `//media.giphy.com/media/${this.currentItem.id}/giphy.mp4`;
-
+  
+          if (this.player)
+            this.player.stopVideo();
           this.giphyElm.style.visibility = 'visible';
           playerElm.style.visibility = 'hidden';
         }
@@ -154,8 +173,8 @@
             this.player.setSize(dim * 16, dim * 9);
 
           let container = document.querySelector('.video .video-desktop .video-container');
-          this.giphyElm.height = container.clientHeight;
-          this.giphyElm.width = container.clientWidth;
+          this.giphyElm.height = dim * 9;
+          this.giphyElm.width = dim * 16;
         })();
       },
 
@@ -212,6 +231,56 @@
 
         this.itemGroup.classList.remove('is-set');
         setTimeout(() => this.itemGroup.classList.add('is-set'), 50);
+      },
+      
+      onClickMore: function () {
+        if (this.mobilePage >= this.mobilePages - 1)
+          this.mobilePage = 0;
+        else
+          this.mobilePage++;
+        
+        this.itemsMobile.splice(0, this.itemsMobile.length);
+        for (let i = 0; i < MOBILE_ON_PAGE; i++) {
+          let ind = MOBILE_ON_PAGE * this.mobilePage + i;
+          if (ind < this.items.length)
+            this.itemsMobile.push(this.items[ind]);
+        }
+      },
+  
+      onClickItemMobile: function (index) {
+        this.currentItem = this.itemsMobile[index];
+  
+        let playerElmId = `mobile-video-${index}`;
+        let playerElm = document.getElementById(playerElmId);
+        let giphyElm = document.getElementById(`mobile-giphy-${index}`);
+        
+        if (this.player) {
+          this.player.destroy();
+          this.player = null;
+        }
+  
+        let h = Math.round(window.innerHeight / 3);
+        let w = Math.round(window.innerWidth);
+        
+        if (this.currentItem.type == TYPE_YOUTUBE) {
+          this.player = new YouTubePlayer(playerElmId, {
+            playerVars: { 'autoplay': 1, 'controls': 0, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'disablekb': 0},
+            videoId: this.currentItem.id,
+            height: h.toString(),
+            width: w.toString()
+          });
+          this.player.playVideo();
+  
+          playerElm.style.visibility = 'visible';
+        } else if (this.currentItem.type == TYPE_GIPHY) {
+          giphyElm.src = (document.location.protocol == "https:" ? "https://" : "http://") +
+            `//media.giphy.com/media/${this.currentItem.id}/giphy.mp4`;
+  
+          giphyElm.width = w;
+          giphyElm.height = h;
+          
+          giphyElm.style.visibility = 'visible';
+        }
       }
     }
   }
@@ -236,6 +305,10 @@
       .video-player, .giphy
         position: absolute
         left: 0
+        
+      .giphy
+        left: 50%
+        transform: translateX(-50%)
 
     .video-list
       margin-top: 15px
@@ -306,7 +379,7 @@
     .item
       cursor: pointer
       position: relative
-
+      
       .img
         width: 100%
         height: 100%
@@ -343,6 +416,14 @@
         top: 50%
         transform: translate(-50%, -50%)
         pointer-events: none
+        
+      .video-player
+        width: 100%
+        height: 100%
+        top: 0
+        left: 0
+        position: absolute
+        
 
       &:hover
         .play
@@ -350,15 +431,43 @@
 
         .text
           opacity: 0
-
+      
+    .item-inner
+      position: relative
+      height: 100%
+      width: 100%
+  
+  
     .video-mobile
       padding: 0
+      position: relative
+      height: 100vh
 
       @media (min-width: 700px)
         display: none
 
       .item
+        position: absolute
+        top: 0
         height: 33.33333vh
+        width: 100%
+        
+      .item:nth-child(3n+2)
+        top: 33.33333vh
+      
+      .item:nth-child(3n)
+        top: 66.66666vh
+        
+      .giphy, .youtube
+        visibility: hidden
+        
+  
+  .mobile-enter-active, .mobile-leave-active
+    transition: opacity 1s
+  
+  .mobile-enter, .mobile-leave-active
+    opacity: 0
+
 
 </style>
 

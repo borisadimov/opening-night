@@ -3,11 +3,11 @@
     .spacer
     .char-box(
       v-for="(char, index) of chars"
-      v-bind:class="[char.name]"
-      v-bind:key="char.name"
+      v-bind:class="[char.id]"
+      v-bind:key="char.id"
       @mouseenter="onEnterChar(index)"
       )
-      .char-inner
+      .char-inner(v-on:click="onClickChar")
         .char-bg
         .char-player
           .char-video(v-bind:id="'video-char-' + index")
@@ -16,7 +16,7 @@
           .char-socials
             | SHARE
             a.facebook(href="#")
-            a.twitter(href="#")
+            a.twitter(href="https://twitter.com/intent/tweet?text=Check%20this%20out!&amp;hashtags=OpeningNight&amp;url=https://www.youtube.com/watch?v=1qCpoH4VO9Y")
             a.instagram(href="#")
 
         .char-list
@@ -30,6 +30,8 @@
 
 <script>
   import YouTubePlayer from 'youtube-player';
+  
+  import store from 'store/Store';
 
 
   const TYPE_YOUTUBE = "TYPE_YOUTUBE";
@@ -37,7 +39,8 @@
 
   const chars = [
     {
-      name: 'rob',
+      id: 'rob',
+      name: 'Rob Riggle',
       videos: [
         {
           type: TYPE_YOUTUBE,
@@ -62,7 +65,8 @@
       ]
     },
     {
-      name: 'anne',
+      id: 'anne',
+      name: 'Anne Heche',
       videos: [
         {
           type: TYPE_YOUTUBE,
@@ -87,7 +91,8 @@
       ]
     },
     {
-      name: 'topher',
+      id: 'topher',
+      name: 'Topher Grace',
       videos: [
         {
           type: TYPE_YOUTUBE,
@@ -112,7 +117,8 @@
       ]
     },
     {
-      name: 'alona',
+      id: 'alona',
+      name: 'Alona Tal',
       videos: [
         {
           type: TYPE_YOUTUBE,
@@ -137,7 +143,8 @@
       ]
     },
     {
-      name: 'jc',
+      id: 'jc',
+      name: 'J. C. Chasez',
       videos: [
         {
           type: TYPE_YOUTUBE,
@@ -162,7 +169,8 @@
       ]
     },
     {
-      name: 'taye',
+      id: 'taye',
+      name: 'Taye Diggs',
       videos: [
         {
           type: TYPE_YOUTUBE,
@@ -187,7 +195,8 @@
       ]
     },
     {
-      name: 'paul',
+      id: 'paul',
+      name: 'Paul Scheer',
       videos: [
         {
           type: TYPE_YOUTUBE,
@@ -212,7 +221,8 @@
       ]
     },
     {
-      name: 'lesli',
+      id: 'lesli',
+      name: 'Lesli Margherita',
       videos: [
         {
           type: TYPE_YOUTUBE,
@@ -255,9 +265,6 @@
         playerActive: false,
         timeout: 0
       }
-    },
-
-    mounted: function () {
     },
 
     methods: {
@@ -315,6 +322,9 @@
       },
 
       onEnterChar: function (i) {
+        if (store().isTablet)
+          return;
+
         if (i != this.currentChar) {
           this.currentChar = i;
           this.currentVideo = 0;
@@ -334,6 +344,13 @@
         this.playerActive = false;
         this.currentChar = -1;
         this.currentVideo = 0;
+      },
+
+      onClickChar: function (char) {
+        if (!store().isTablet)
+          return;
+
+        this.$emit('showCharMobile', char);
       }
     }
   }
@@ -632,14 +649,48 @@
           transform: skew(-18.5deg) scale(1.1) translate3D(-35vw,0,0)
 
 </style>
-<style lang="scss" scoped rel="stylesheet/sсss">
-  @media (max-width: 510px) {
+<style lang="scss" scoped rel="stylesheet/scss">
+  @media (max-width: 768px) {
     .characters {
       height: 73vw;
+
+      &:hover {
+        .rob {
+          transform: skew(-18.5deg);
+        }
+        .anne {
+          transform: skew(-18.5deg);
+        }
+        .topher {
+          transform: skew(-18.5deg);
+        }
+        .alona {
+          transform: skew(-18.5deg);
+        }
+        .jc {
+          transform: skew(-18.5deg);
+        }
+        .taye {
+          transform: skew(-18.5deg);
+        }
+        .paul {
+          transform: skew(-18.5deg);
+        }
+        .lesli {
+          transform: skew(-18.5deg);
+        }
+      }
 
       .char-box {
         height: 36.5vw;
         max-width: 24.6vw;
+
+
+        &:hover,
+        &:hover ~ * {
+          transform: skew(-18.5deg) !important;
+          z-index: 0;
+        }
 
         .char-bg,
         .char-list,
