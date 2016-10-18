@@ -14,7 +14,7 @@
 <script>
   import {TweenLite} from 'gsap';
   import ScrollToPlugin from 'gsap/src/uncompressed/plugins/ScrollToPlugin';
-  
+
   import store from 'store/Store';
 
 
@@ -41,13 +41,13 @@
       },
 
       onClickWatch: function () {
-        this.$emit('watch');
+        this.$emit('watchOpen');
       },
 
       onClickBurger: function () {
         this.showMenu = !this.showMenu;
       },
-      
+
       onClickItem: function (item) {
         let pointTo = 0;
         switch (item) {
@@ -56,7 +56,7 @@
           case this.SECTION_CLIPS: pointTo = store().sectionClips.offsetTop; break;
           case this.SECTION_CONTEST: pointTo = store().sectionContest.offsetTop; break;
         }
-        TweenLite.to(window, .5, {scrollTo: pointTo + 5});
+        TweenLite.to(window, .5, {scrollTo: pointTo});
         this.$emit('nav');
       }
     },
@@ -192,6 +192,7 @@
     .menu {
       background: transparent;
       box-shadow: none;
+      transform: translate3d(0,0,0);
 
       .burger {
         background: url('~assets/images/burger.svg') no-repeat center center / contain;
