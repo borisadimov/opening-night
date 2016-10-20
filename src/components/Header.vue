@@ -1,25 +1,31 @@
 <template lang="pug">
   .header
     .bg
-    .logo
 
-    .watch
-      .watch-button
-        .watch-now(@click="onClickWatch")
-          | Watch It Now
-        .watch-starting
-          | starting at
-          span $2.99
-          | on Amazon Demand
+    .logo-w-btn
+      .logo
 
-      .watch-button
-        .watch-trailer
-          .play
-          | Watch Trailer
+      .watch
+        .watch-button
+          .watch-now(@click="onClickWatch")
+            .bg-1
+            .bg-2
+            .text
+              | Watch It Now
+          .watch-starting
+            | starting at
+            span $2.99
+            | on Amazon Demand
+
+        .watch-button
+          .watch-trailer(@click="onClickWatchTrailer")
+            .play
+            | Watch Trailer
 
     characters-component(v-on:showCharMobile="clickCharMobile")
-    a.smule(href="/")
-    .arrow(@click="onClickScroll")
+    .smule(@click="onClickSmule")
+    transition(name="arrow")
+      .arrow(@click="onClickScroll" v-if="arrowVisible")
 </template>
 
 <script>
@@ -27,6 +33,7 @@
   import ScrollToPlugin from 'gsap/src/uncompressed/plugins/ScrollToPlugin';
 
   import CharactersComponent from 'components/Characters';
+  import store from 'store/Store';
 
 
   export default {
@@ -40,7 +47,9 @@
       return {
         karaoke: null,
         background: null,
-        logo: null
+        logo: null,
+
+        arrowVisible: true
       };
     },
 
@@ -49,26 +58,35 @@
 
       this.karaoke = document.querySelector('.header .smule');
       this.background = document.querySelector('.header .bg');
-      this.logo = document.querySelector('.header .logo');
+      this.logo = document.querySelector('.header .logo-w-btn');
     },
 
     methods: {
       onClickWatch: function () {
         this.$emit('watchOpen');
       },
+  
+      onClickWatchTrailer: function () {
+        this.$emit('watchTrailer');
+      },
 
       onClickScroll: function () {
-        TweenLite.to(window, .5, {scrollTo: document.documentElement.clientHeight + 5});
+        TweenLite.to(window, .5, {scrollTo: store().sectionReviews.offsetTop});
+      },
+
+      onClickSmule: function () {
+        TweenLite.to(window, 1, {scrollTo: store().sectionContest.offsetTop});
       },
 
       onScroll: function () {
+        this.arrowVisible = window.pageYOffset == 0;
         let dur = window.innerHeight;
         let progress = window.pageYOffset / dur;
         if (progress >= 0 && progress <= 1) {
           progress *= window.innerHeight / 100;
-          TweenLite.to(this.background, 0.2, {y: (progress * 10), z: '0.01', ease: Power0.easeInOut});
-          TweenLite.to(this.karaoke, 0.2, {y: (progress * 50), z: '0.01', ease: Power0.easeInOut});
-          TweenLite.to(this.logo, 0.2, {y: -(progress * 20), z: '0.01', ease: Power0.easeInOut});
+          TweenLite.to(this.background, 0.1, {y: (progress * 10), z: '0.01', ease: Power0.easeInOut});
+          TweenLite.to(this.karaoke, 0.1, {y: (progress * 30), z: '0.01', ease: Power0.easeInOut});
+          TweenLite.to(this.logo, 0.1, {y: -(progress * 20), z: '0.01', ease: Power0.easeInOut});
         }
       },
 
@@ -117,7 +135,6 @@
           margin-right: 0
 
       &-now
-        background-image: linear-gradient(-182deg, #f45232 0%, #e52816 100%)
         box-shadow: 0px 3px 10px 0px rgba(79, 24, 91, 0.68)
         padding: 0 59px
         border-radius: 120px
@@ -128,6 +145,33 @@
         text-align: center
         line-height: 55px
         cursor: pointer
+
+        position: relative
+        overflow: hidden
+
+        .text
+          position: relative
+          z-index: 4
+
+        .bg-1,
+        .bg-2
+          position: absolute
+          top: 0
+          left: 0
+          width: 100%
+          height: 100%
+          border-radius: 100px
+          background: linear-gradient(-182deg, #f45232 0%, #e52816 100%)
+
+        .bg-2
+          background: linear-gradient(-182deg, #FF7340 0%, #F9412F 100%)
+          opacity: 0.01
+          transition: opacity 0.1s ease
+          will-change: opacity
+
+        &:hover .bg-2
+          opacity: 0.99
+
 
       &-starting
         margin-top: 10px
@@ -159,6 +203,11 @@
         flex-flow: row nowrap
         align-items: center
 
+        transition: background 0.1s ease
+
+        &:hover
+          background: hsla(0,0%,100%,.3)
+
       &-trailer .play
         background: url("~assets/images/play.svg") no-repeat center center / contain
         margin-right: 10px
@@ -172,6 +221,10 @@
       background: url("~assets/images/smule.png") no-repeat center center / contain
       height: 211px
       width: 215px
+      cursor: pointer
+
+    .smule:hover
+      filter: drop-shadow(0px 0px 5px rgba(255, 200, 220, .5))
 
     .arrow
       position: absolute
@@ -186,6 +239,13 @@
 
     .arrow:hover
       filter: drop-shadow(0px 0px 2px #ffffff)
+
+  .arrow-enter-active, .arrow-leave-active
+    transition: opacity .5s
+
+  .arrow-enter, .arrow-leave-active
+    opacity: 0.01
+
 
 </style>
 
@@ -204,7 +264,18 @@
     .header {
       height: 1030px;
       .smule {
-        display: none;
+        background: url("~assets/images/smule-tablet.png") no-repeat center center / contain;
+        height: 63px;
+        width: 269px;
+
+        top: 5px;
+        right: initial;
+        left: 18px;
+      }
+
+
+      .logo {
+        margin-top: 70px;
       }
     }
   }
@@ -237,6 +308,12 @@
   @media (max-width: 425px) {
     .header {
       height: 740px;
+
+      .smule {
+        height: 50px;
+        width: 214px;
+        top: 10px;
+      }
     }
   }
 </style>

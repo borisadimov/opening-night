@@ -75,8 +75,8 @@
             this.playerActive = true;
           }
 
-          giphyElm.style.visibility = 'hidden';
-          playerElm.style.visibility = 'visible';
+          giphyElm.style.opacity = '0.01';
+          playerElm.style.opacity = '0.99';
 
         } else if (videoData.type == TYPE_GIPHY) {
           if (this.playerActive)
@@ -88,8 +88,8 @@
           giphyElm.src = (document.location.protocol == "https:" ? "https://" : "http://") +
             `//media.giphy.com/media/${videoData.id}/giphy.mp4`;
 
-          giphyElm.style.visibility = 'visible';
-          playerElm.style.visibility = 'hidden';
+          giphyElm.style.opacity = '0.99';
+          playerElm.style.opacity = '0.01';
         }
       },
 
@@ -160,6 +160,16 @@
       display: flex;
       flex-flow: column nowrap;
       align-items: center;
+      position: relative;
+      overflow: hidden;
+      height: 55vw;
+
+      & > * {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 100%;
+      }
     }
 
     .footer {

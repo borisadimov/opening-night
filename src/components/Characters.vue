@@ -275,7 +275,7 @@
         let giphyElm = document.querySelector(`#video-char-${this.currentChar} .giphy`);
 
         let h = Math.round(window.innerWidth / 100 * 10.2);
-        let w = Math.round(h * 16 / 9);
+        let w = Math.round(window.innerWidth / 100 * 25);
 
         let videoData = this.chars[this.currentChar].videos[this.currentVideo];
 
@@ -377,7 +377,7 @@
 
     .char-player
       position: absolute
-      left: 20vw
+      left: 18vw
       overflow: hidden
 
       display: flex
@@ -386,11 +386,12 @@
 
       .char-video
         height: 10.2vw
-        width: 23.5vw
-        margin-top: 1vw
+        width: 25vw !important
+        margin-top: 2vw
         position: relative
 
-        .video-player, .giphy
+        .video-player,
+        .giphy
           position: absolute
           top: 0
           left: 0
@@ -399,7 +400,7 @@
 
 
       .char-socials
-        margin-top: 1vw
+        margin-top: 2vw
         margin-left: 1vw
         display: flex
         flex-flow: column nowrap
@@ -435,16 +436,16 @@
     .char-list
       position: absolute
       left: 13.3vw
-      bottom: 0.8vw
+      bottom: 0vw
       width: 32.7vw
-      height: 5vw
+      height: 4.2vw
       transform: skew(-18.5deg)
-      padding-left: 0.9vw
+      padding-left: 3.8vw
 
       .char-video
         display: inline-block
-        width: 7vw
-        height: 5vw
+        width: 5.5vw
+        height: 3vw
         margin-right: 1vw
         overflow: hidden
         outline: 2px transparent solid
@@ -548,9 +549,9 @@
         left: 84.1vw
         .char-inner
           background-image: url("~assets/images/chars/lesli.png")
-
 </style>
-<style lang="sss" scoped>
+
+<style lang="sss" scoped rel="stylesheet/sass">
   @media (min-width: 769px)
     .characters
       &:hover

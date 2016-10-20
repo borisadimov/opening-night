@@ -63,39 +63,51 @@
   const items = [
     {
       type: TYPE_YOUTUBE,
-      id: "jh-hzbG5FzI",
+      id: "jjKZt5_dVTA",
       preview: "assets/images/video-1.png",
-      text: "CHOPSTICKS"
+      text: "BUST A MOVE"
     },
     {
-      type: TYPE_GIPHY,
-      id: "l41YktuUJjzzOshri",
+      type: TYPE_YOUTUBE,
+      id: "gPEv9s3ZiPE",
       preview: "assets/images/video-2.png",
-      text: "WELCOME TO WONDERLAND"
+      text: "RUFIED A STAR!"
     },
     {
       type: TYPE_YOUTUBE,
-      id: "d9TpRfDdyU0",
+      id: "MkWN1u4t_ys",
       preview: "assets/images/video-3.png",
-      text: "WORDS, SAY WORDS"
+      text: "CALM THE F*$K DOWN"
     },
     {
       type: TYPE_YOUTUBE,
-      id: "XVwqSlTFQq0",
+      id: "HN3xlrJlT1Y",
       preview: "assets/images/video-4.png",
-      text: "CHOPSTICKS"
+      text: "ZIP CODE RATINGS"
     },
     {
       type: TYPE_YOUTUBE,
-      id: "I3W3mRs4ULQ",
+      id: "RKh0gELr3ok",
       preview: "assets/images/video-3.png",
-      text: "WELCOME TO WONDERLAND"
+      text: "NO DRUGS NEEDED"
     },
     {
       type: TYPE_YOUTUBE,
-      id: "ElvLZMsYXlo",
+      id: "yDAn6EcKMwM",
       preview: "assets/images/video-4.png",
-      text: "WORDS, SAY WORDS"
+      text: "THE BATTLE IS ON"
+    },
+    {
+      type: TYPE_YOUTUBE,
+      id: "BtWAz-tROHg",
+      preview: "assets/images/video-3.png",
+      text: "MAMBO #5"
+    },
+    {
+      type: TYPE_YOUTUBE,
+      id: "Tlm3Zeylt4c",
+      preview: "assets/images/video-4.png",
+      text: "DANCE OFF"
     }
   ];
 
@@ -162,7 +174,7 @@
           playerElm.style.visibility = 'hidden';
         }
       },
-
+  
       onResize: function () {
         debounce(300, () => {
           let dimH = Math.round(window.innerHeight / 9 * .8);
@@ -245,6 +257,8 @@
           if (ind < this.items.length)
             this.itemsMobile.push(this.items[ind]);
         }
+  
+        TweenLite.to(window, .5, {scrollTo: "#video-anchor"});
       },
   
       onClickItemMobile: function (index) {
@@ -264,12 +278,14 @@
         
         if (this.currentItem.type == TYPE_YOUTUBE) {
           this.player = new YouTubePlayer(playerElmId, {
-            playerVars: { 'autoplay': 1, 'controls': 0, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'disablekb': 0},
+            playerVars: { 'autoplay': 0, 'controls': 0, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'disablekb': 0},
             videoId: this.currentItem.id,
             height: h.toString(),
             width: w.toString()
           });
-          this.player.playVideo();
+          this.player.addEventListener('onStateChange', this.onVideoStop);
+          
+          setTimeout(() => this.player.playVideo(), 500);
   
           playerElm.style.visibility = 'visible';
         } else if (this.currentItem.type == TYPE_GIPHY) {
@@ -281,7 +297,14 @@
           
           giphyElm.style.visibility = 'visible';
         }
-      }
+      },
+  
+      onVideoStop: function (e) {
+        if (e.data == 0) {
+          let playerElm = document.getElementById(playerElmId);
+          playerElm.style.visibility = 'hidden';
+        }
+      },
     }
   }
 </script>

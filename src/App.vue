@@ -5,14 +5,19 @@
     characters-popup-component(v-on:close="setCharMobile(false)" v-if="charMobileOpened" v-bind:charData="charMobileData")
 
     purchase-component(v-on:close="setWatch(false)" v-if="watchOpened")
+  
+    .trailer-video(v-show="trailerActive")
+      .video-player#trailer-video
 
     menu-component(v-on:watchOpen="setWatch(true)" v-on:nav="onScroll" v-bind:currentSection="currentSection")
 
-    header-component(v-on:watchOpen="setWatch(true)" v-on:showCharMobile="setCharMobile($event)")
+    header-component(v-on:watchOpen="setWatch(true)" v-on:watchTrailer="watchTrailer" v-on:showCharMobile="setCharMobile($event)")
 
     slider-component
 
     .watch-it-now.watch-it-now-mobile(@click="setWatch(true)")
+      .bg-1
+      .bg-2
       .title
         | Watch It Now
       .subtitle
@@ -22,7 +27,11 @@
 
     download-component
 
+    ul.juicer-feed(data-feed-id="blah-blah-blah")
+
     .watch-it-now(@click="setWatch(true)")
+      .bg-1
+      .bg-2
       .title
         | Watch It Now
       .subtitle
@@ -49,6 +58,8 @@
 </template>
 
 <script>
+import YouTubePlayer from 'youtube-player';
+  
 import HeaderComponent from 'components/Header';
 import SliderComponent from 'components/Slider';
 import VideoComponent from 'components/Video';
@@ -59,6 +70,8 @@ import DownloadComponent from 'components/Download';
 import CharactersPopupComponent from 'components/CharactersPopup';
 import store from 'store/Store';
 
+
+const trailerVideo = "BJwKK08_cPg";
 
 export default {
   components: {
@@ -77,23 +90,37 @@ export default {
       watchOpened: false,
       charMobileOpened: false,
       charMobileData: null,
-      
-      currentSection: null
+
+      currentSection: null,
+  
+      player: null,
+      playerElm: null,
+      trailerActive: false
     }
   },
 
   mounted: function () {
     window.addEventListener('scroll', this.onScroll);
-  
+    
+    document.addEventListener('fullscreenchange', this.onFSChange);
+    document.addEventListener('webkitfullscreenchange', this.onFSChange);
+    document.addEventListener('mozfullscreenchange', this.onFSChange);
+    document.addEventListener('MSFullscreenChange', this.onFSChange);
+
     store().onReady();
     this.currentSection = store().SECTION_CAST;
-  },
   
+    this.player = new YouTubePlayer('trailer-video', {
+      playerVars: {'autoplay': 0, 'controls': 1, 'showinfo': 1, 'rel': 0, 'modestbranding': 1, 'disablekb': 0},
+      videoId: trailerVideo
+    });
+  },
+
   methods: {
     onScroll: function () {
       if (this.watchOpened || this.charMobileOpened)
         return;
-      
+
       if (window.pageYOffset > store().sectionContest.offsetTop - window.innerHeight/2)
         this.currentSection = store().SECTION_CONTEST;
       else if (window.pageYOffset > store().sectionClips.offsetTop - window.innerHeight/2)
@@ -103,14 +130,45 @@ export default {
       else
         this.currentSection = store().SECTION_CAST;
     },
-    
+
     setWatch: function (open) {
       this.watchOpened = open;
     },
-    
+
     setCharMobile: function (data) {
       this.charMobileOpened = !!data;
       this.charMobileData = data;
+    },
+  
+    watchTrailer: function () {
+      this.trailerActive = true;
+  
+      this.player.playVideo();
+      this.playerElm = document.getElementById('trailer-video');
+      let requestFullScreen =
+        this.playerElm.requestFullscreen ||
+        this.playerElm.webkitRequestFullscreen ||
+        this.playerElm.mozRequestFullScreen ||
+        this.playerElm.msRequestFullscreen;
+      if (requestFullScreen)
+        requestFullScreen.bind(this.playerElm)();
+    },
+  
+    onFSChange: function () {
+      setTimeout(() => {
+        let inFS =
+          document.fullscreenElement ||
+          document.webkitFullscreenElement ||
+          document.mozFullScreenElement ||
+          document.msFullscreenElement;
+        if (inFS) {
+          this.playerElm.width = screen.width;
+          this.playerElm.height = screen.height;
+        } else {
+          this.player.stopVideo();
+          this.trailerActive = false;
+        }
+      }, 10);
     }
   }
 }
@@ -173,6 +231,12 @@ export default {
 </style>
 
 <style lang="sss" rel="stylesheet/sass">
+  .juicer-feed
+    background: #25182A
+
+    h1.referral
+      display: none !important
+
   .container
     display: flex
     flex-flow: column nowrap
@@ -224,21 +288,43 @@ export default {
 <style lang="sss" scoped rel="stylesheet/sass">
 
   .watch-it-now
-    background-image: linear-gradient(-182deg, #f45232 0%, #e52816 100%)
     padding: 22px 0
     display: flex
     flex-flow: column nowrap
     align-items: center
     cursor: pointer
 
+    position: relative
+    overflow: hidden
+
     &-mobile
       display: none
+
+    .bg-1,
+    .bg-2
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      height: 100%
+      background: linear-gradient(-182deg, #f45232 0%, #e52816 100%)
+
+    .bg-2
+      background: linear-gradient(-182deg, #FF7340 0%, #F9412F 100%)
+      opacity: 0.01
+      transition: opacity 0.1s ease
+      will-change: opacity
+
+    &:hover .bg-2
+      opacity: 0.99
 
     .title
       font-weight: bold
       font-size: 20.79px
       color: #FFFFFF
       letter-spacing: 1.68px
+      position: relative
+      z-index: 4
 
     .subtitle
       margin-top: 1px
@@ -246,6 +332,8 @@ export default {
       font-size: 16px
       color: #FFFFFF
       letter-spacing: 1.29px
+      position: relative
+      z-index: 4
 
   .footer
     background: #1B252A
@@ -306,11 +394,15 @@ export default {
       color: #5B6D82
       letter-spacing: 0.81px
 
-
+  .trailer-video
+    position: absolute
+    width: 100%
+    height: 100%
+    z-index: 20000
 </style>
 
 
-<style scoped lang="scss">
+<style scoped lang="scss" rel="stylesheet/scss">
   @media (max-width: 699px) {
     .watch-it-now-mobile {
       display: flex;
