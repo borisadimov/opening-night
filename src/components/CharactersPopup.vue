@@ -12,10 +12,8 @@
     .footer
       .socials
         | SHARE
-        a.facebook(href="#")
-        a.twitter(href="https://twitter.com/intent/tweet?text=Check%20this%20out!&amp;hashtags=OpeningNight&amp;url=https://www.youtube.com/watch?v=1qCpoH4VO9Y")
-        a.instagram(href="#")
-
+        .facebook(@click="openFBVideoPost")
+        .twitter(@click="openTWVideoPost")
       .list-videos
         .list-video(
           v-for="n in 4" @click="onClickPreview(n - 1)"
@@ -26,21 +24,14 @@
 
 <script>
   import YouTubePlayer from 'youtube-player';
-
-
-  const TYPE_YOUTUBE = "TYPE_YOUTUBE";
-  const TYPE_GIPHY = "TYPE_GIPHY";
-
+  import store from 'store/Store';
   export default {
     name: "CharactersPopupComponent",
-
     props: ['charData'],
-
     data: function() {
       return {
-        "TYPE_YOUTUBE": TYPE_YOUTUBE,
-        "TYPE_GIPHY": TYPE_GIPHY,
-
+        "TYPE_YOUTUBE": store().TYPE_YOUTUBE,
+        "TYPE_GIPHY": store().TYPE_GIPHY,
         currentVideo: 0,
         player: null,
         playerActive: false
@@ -48,51 +39,52 @@
     },
 
     methods: {
+      openFBVideoPost: function () {
+        let url = store().getFBVideoPost(this.charData.videos[this.currentVideo]);
+        store().openSocialPopup(url, 'Facebook share');
+      },
+      openTWVideoPost: function () {
+        let url = store().getTWVideoPost(this.charData.videos[this.currentVideo]);
+        store().openSocialPopup(url, 'Twitter share');
+      },
+
       onClose: function () {
         this.$emit('close');
       },
-
       setVideo: function () {
         let playerId = "popup-video";
         let playerElm = document.getElementById(playerId);
         let giphyElm = document.getElementById("popup-giphy");
-
         let w = Math.round(window.innerWidth);
         let h = Math.round(w / 16 * 9);
-
         let videoData = this.charData.videos[this.currentVideo];
-
-        if (videoData.type == TYPE_YOUTUBE) {
+        if (videoData.type == this.TYPE_YOUTUBE) {
           if (this.player && this.playerActive) {
             this.player.loadVideoById(videoData.id);
           } else {
             this.player = new YouTubePlayer(playerId, {
-              playerVars: {'autoplay': 1, 'controls': 0, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'disablekb': 1},
+              playerVars: {'autoplay': 0, 'controls': 0, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'disablekb': 1},
               height: h.toString(),
               width: w.toString(),
               videoId: videoData.id
             });
             this.playerActive = true;
+            this.player.playVideo();
           }
-
           giphyElm.style.opacity = '0.01';
           playerElm.style.opacity = '0.99';
-
-        } else if (videoData.type == TYPE_GIPHY) {
+        } else if (videoData.type == this.TYPE_GIPHY) {
           if (this.playerActive)
             this.player.destroy();
           this.playerActive = false;
-
           giphyElm.width = w;
           giphyElm.height = h;
           giphyElm.src = (document.location.protocol == "https:" ? "https://" : "http://") +
             `//media.giphy.com/media/${videoData.id}/giphy.mp4`;
-
           giphyElm.style.opacity = '0.99';
           playerElm.style.opacity = '0.01';
         }
       },
-
       onClickPreview: function (num) {
         if (this.currentVideo != num) {
           this.currentVideo = num;
@@ -100,7 +92,6 @@
         }
       }
     },
-
     mounted: function() {
       this.setVideo();
     }
@@ -170,6 +161,10 @@
         width: 100%;
         height: 100%;
       }
+  
+      .giphy {
+        pointer-events: none;
+      }
     }
 
     .footer {
@@ -196,6 +191,7 @@
           border-radius: 100px;
           background: #000 no-repeat center center / contain;
           margin-right: 10px;
+          cursor: pointer;
         }
 
         .facebook {
@@ -244,6 +240,63 @@
           background-size: cover;
           background-repeat: no-repeat;
           background-position: center center;
+        }
+      }
+    }
+  }
+
+
+  @media (max-height: 375px) {
+    .characters-popup {
+      flex-flow: row nowrap;
+      overflow: hidden;
+
+      .head {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 123;
+      }
+
+      .video {
+        height: 67%;
+        margin-top: 70px;
+        width: 74%;
+      }
+
+      .footer {
+        width: 24.5%;
+
+        .socials {
+          position: absolute;
+          bottom: 8px;
+          left: 37%;
+          transform: translateX(-50%);
+
+
+          .facebook,
+          .twitter {
+            height: 20px;
+            width: 20px;
+            margin-top: 0;
+          }
+        }
+      }
+
+
+      .list-videos {
+        flex-flow: column nowrap;
+        justify-content: space-between;
+        padding-top: 50px;
+        margin-top: 0;
+        height: 100%;
+        padding-right: 8px;
+        padding-bottom: 6px;
+
+        .list-video {
+          width: 100%;
+          height: 20vh;
         }
       }
     }

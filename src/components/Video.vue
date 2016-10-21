@@ -42,7 +42,7 @@
                 .youtube(v-bind:id="'mobile-video-' + index")
                 video.giphy(autoplay loop v-bind:id="'mobile-giphy-' + index" v-show="currentItem == item")
 
-    .more-clips(@click="onClickMore")
+    .more-clips(@click="onClickMore" v-if="moreBtnVisible")
       | MORE CLIPS
 </template>
 
@@ -55,73 +55,21 @@
   import store from 'store/Store';
 
 
-  const TYPE_YOUTUBE = "TYPE_YOUTUBE";
-  const TYPE_GIPHY = "TYPE_GIPHY";
-  
   const MOBILE_ON_PAGE = 3;
-
-  const items = [
-    {
-      type: TYPE_YOUTUBE,
-      id: "jjKZt5_dVTA",
-      preview: "assets/images/video-1.png",
-      text: "BUST A MOVE"
-    },
-    {
-      type: TYPE_YOUTUBE,
-      id: "gPEv9s3ZiPE",
-      preview: "assets/images/video-2.png",
-      text: "RUFIED A STAR!"
-    },
-    {
-      type: TYPE_YOUTUBE,
-      id: "MkWN1u4t_ys",
-      preview: "assets/images/video-3.png",
-      text: "CALM THE F*$K DOWN"
-    },
-    {
-      type: TYPE_YOUTUBE,
-      id: "HN3xlrJlT1Y",
-      preview: "assets/images/video-4.png",
-      text: "ZIP CODE RATINGS"
-    },
-    {
-      type: TYPE_YOUTUBE,
-      id: "RKh0gELr3ok",
-      preview: "assets/images/video-3.png",
-      text: "NO DRUGS NEEDED"
-    },
-    {
-      type: TYPE_YOUTUBE,
-      id: "yDAn6EcKMwM",
-      preview: "assets/images/video-4.png",
-      text: "THE BATTLE IS ON"
-    },
-    {
-      type: TYPE_YOUTUBE,
-      id: "BtWAz-tROHg",
-      preview: "assets/images/video-3.png",
-      text: "MAMBO #5"
-    },
-    {
-      type: TYPE_YOUTUBE,
-      id: "Tlm3Zeylt4c",
-      preview: "assets/images/video-4.png",
-      text: "DANCE OFF"
-    }
-  ];
 
   export default {
     name: "VideoComponent",
 
     data: function () {
       return {
-        currentItem: null,
-        items: items,
+        "TYPE_YOUTUBE": store().TYPE_YOUTUBE,
+        "TYPE_GIPHY": store().TYPE_GIPHY,
+        items: store().mainVideos,
         
-        itemsMobile: items.slice(0, MOBILE_ON_PAGE),
-        mobilePages: Math.ceil(items.length / MOBILE_ON_PAGE),
-        mobilePage: 0,
+        currentItem: null,
+        
+        itemsMobile: store().mainVideos.slice(0, MOBILE_ON_PAGE),
+        moreBtnVisible: true,
 
         itemGroup: null,
         itemElms: null,
@@ -135,7 +83,7 @@
       if (!store().isMobile) {
         window.addEventListener('resize', this.onResize);
         
-        this.currentItem = items[0];
+        this.currentItem = this.items[0];
   
         this.itemGroup = document.querySelector('.video .video-list .group');
         this.itemElms = document.querySelectorAll('.video .video-list .item');
@@ -151,7 +99,7 @@
       setVideo: function () {
         let playerElm = document.getElementById('main-video');
 
-        if (this.currentItem.type == TYPE_YOUTUBE) {
+        if (this.currentItem.type == this.TYPE_YOUTUBE) {
           if (this.player) {
             this.player.loadVideoById(this.currentItem.id);
           } else {
@@ -164,7 +112,7 @@
           this.giphyElm.style.visibility = 'hidden';
           playerElm.style.visibility = 'visible';
 
-        } else if (this.currentItem.type == TYPE_GIPHY) {
+        } else if (this.currentItem.type == this.TYPE_GIPHY) {
           this.giphyElm.src = (document.location.protocol == "https:" ? "https://" : "http://") +
             `//media.giphy.com/media/${this.currentItem.id}/giphy.mp4`;
   
@@ -197,7 +145,7 @@
       },
 
       next: function (num) {
-        if (num < items.length - 1)
+        if (num < this.items.length - 1)
           return num + 1;
         else
           return 0;
@@ -207,7 +155,7 @@
         if (num > 0)
           return num - 1;
         else
-          return items.length - 1;
+          return this.items.length - 1;
       },
 
       search: function (elm) {
@@ -246,19 +194,8 @@
       },
       
       onClickMore: function () {
-        if (this.mobilePage >= this.mobilePages - 1)
-          this.mobilePage = 0;
-        else
-          this.mobilePage++;
-        
-        this.itemsMobile.splice(0, this.itemsMobile.length);
-        for (let i = 0; i < MOBILE_ON_PAGE; i++) {
-          let ind = MOBILE_ON_PAGE * this.mobilePage + i;
-          if (ind < this.items.length)
-            this.itemsMobile.push(this.items[ind]);
-        }
-  
-        TweenLite.to(window, .5, {scrollTo: "#video-anchor"});
+        this.itemsMobile = this.items;
+        this.moreBtnVisible = false;
       },
   
       onClickItemMobile: function (index) {
@@ -276,7 +213,7 @@
         let h = Math.round(window.innerHeight / 3);
         let w = Math.round(window.innerWidth);
         
-        if (this.currentItem.type == TYPE_YOUTUBE) {
+        if (this.currentItem.type == this.TYPE_YOUTUBE) {
           this.player = new YouTubePlayer(playerElmId, {
             playerVars: { 'autoplay': 0, 'controls': 0, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'disablekb': 0},
             videoId: this.currentItem.id,
@@ -288,7 +225,7 @@
           setTimeout(() => this.player.playVideo(), 500);
   
           playerElm.style.visibility = 'visible';
-        } else if (this.currentItem.type == TYPE_GIPHY) {
+        } else if (this.currentItem.type == this.TYPE_GIPHY) {
           giphyElm.src = (document.location.protocol == "https:" ? "https://" : "http://") +
             `//media.giphy.com/media/${this.currentItem.id}/giphy.mp4`;
   
@@ -464,22 +401,12 @@
     .video-mobile
       padding: 0
       position: relative
-      height: 100vh
 
       @media (min-width: 700px)
         display: none
 
       .item
-        position: absolute
-        top: 0
         height: 33.33333vh
-        width: 100%
-        
-      .item:nth-child(3n+2)
-        top: 33.33333vh
-      
-      .item:nth-child(3n)
-        top: 66.66666vh
         
       .giphy, .youtube
         visibility: hidden
