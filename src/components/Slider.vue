@@ -1,6 +1,7 @@
 <template lang="pug">
   .slider
     transition(
+      v-on:before-enter="beforeEnter"
       v-on:enter="enter"
       v-on:enter-cancelled="enter"
       )
@@ -75,7 +76,7 @@
 </template>
 <script>
   import {TweenLite, Power0} from 'gsap';
-  import debounce from 'throttle-debounce/debounce';
+  import throttle from 'throttle-debounce/debounce';
 
   const SLIDES = 3;
 
@@ -119,31 +120,35 @@
         this.timer = setInterval(this.onTimer, 5000);
       },
 
+      _onScroll: function() {
+
+        let ch = this.content.clientHeight;
+
+        let wh = window.innerHeight;
+        let dur = 2 * wh;
+        let offset = 1 * wh;
+        let progress = (window.pageYOffset + offset - this.container.offsetTop) / dur;
+
+        if (progress >= 0 && progress <= 1) {
+          TweenLite.to(this.person, 0.1, {y: (progress * wh / 5), z: '0.01', ease: Power0.easeInOut});
+          TweenLite.to(this.content, 0.1, {y: -(progress * (wh - ch)), z: '0.01', ease: Power0.easeInOut});
+          TweenLite.to(this.quotes, 0.1, {y: -(progress * wh / 5), z: '0.01', ease: Power0.easeInOut});
+        }
+
+      },
       onScroll: function () {
-        if (this.entering)
-          return;
-
-        debounce(100, () => {
-          let ch = this.content.clientHeight;
-
-          let wh = window.innerHeight;
-          let dur = 2 * wh;
-          let offset = 1 * wh;
-          let progress = (window.pageYOffset + offset - this.container.offsetTop) / dur;
-          if (progress >= 0 && progress <= 1) {
-            TweenLite.to(this.person, 0.1, {y: (progress * wh / 5), z: '0.01', ease: Power0.easeInOut});
-            TweenLite.to(this.content, 0.1, {y: -(progress * (wh - ch)), z: '0.01', ease: Power0.easeInOut});
-            TweenLite.to(this.quotes, 0.1, {y: -(progress * wh / 5), z: '0.01', ease: Power0.easeInOut});
-          }
-        })();
+        throttle(100, () => {this._onScroll()})();
       },
 
+      beforeEnter: function (el) {
+        this.person = el.childNodes[2] // document.querySelector(`.slider .quote[data="${this.slideNum}"] .person`);
+        this.content = el.childNodes[4] // document.querySelector(`.slider .quote[data="${this.slideNum}"] .content`);
+        this.quotes = el.childNodes[1] // document.querySelector(`.slider .quote[data="${this.slideNum}"] .quotes`);
+        this._onScroll();
+      },
       enter: function () {
-        this.person = document.querySelector(`.slider .quote[data="${this.slideNum}"] .person`);
-        this.content = document.querySelector(`.slider .quote[data="${this.slideNum}"] .content`);
-        this.quotes = document.querySelector(`.slider .quote[data="${this.slideNum}"] .quotes`);
         this.entering = false;
-        this.onScroll();
+        this._onScroll();
       },
 
       onClickLeft: function () {
@@ -211,7 +216,6 @@
       width: 100%
       position: absolute
       overflow: hidden
-      transition: transform .5s ease
 
       .bg
         height: 100%
@@ -263,7 +267,6 @@
         left: 12%
         bottom: 5vh
         z-index: 55
-        transition: transform .5s ease
 
         .in-touch
           opacity: 0.8
@@ -405,7 +408,9 @@
     .bg, .person, .shade, .content, .quotes
       opacity: 0.01
     .content, .quotes
-      transform: translate3d(0, -50px, 0)
+      //- transform: translate3d(0, -50px, 0)
+  .content, .quotes
+    transition: opacity .3s !important
 
 
 </style>

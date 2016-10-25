@@ -25,6 +25,12 @@ replace({
 });
 
 replace({
+  regex: `http://localhost:8000/`,
+  replacement: `/`,
+  paths: [destPath+'/index.html']
+});
+
+replace({
   regex: `id="app" class="">`,
   replacement: `id="app" class="loading">`,
   paths: [destPath+'/index.html']
