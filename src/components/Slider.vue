@@ -76,7 +76,7 @@
 <script>
   import {TweenLite, Power0} from 'gsap';
   import debounce from 'throttle-debounce/debounce';
-  
+
   const SLIDES = 3;
 
   export default {
@@ -96,7 +96,7 @@
         quotes: null,
 
         entering: false,
-        
+
         timer: 0
       };
     },
@@ -122,10 +122,10 @@
       onScroll: function () {
         if (this.entering)
           return;
-  
+
         debounce(100, () => {
           let ch = this.content.clientHeight;
-  
+
           let wh = window.innerHeight;
           let dur = 2 * wh;
           let offset = 1 * wh;
@@ -162,7 +162,7 @@
         else
           this.slideNum = 1;
       },
-      
+
       onTimer: function () {
         this.entering = true;
         if (this.slideNum < SLIDES)
@@ -211,6 +211,7 @@
       width: 100%
       position: absolute
       overflow: hidden
+      transition: transform .5s ease
 
       .bg
         height: 100%
@@ -262,6 +263,7 @@
         left: 12%
         bottom: 5vh
         z-index: 55
+        transition: transform .5s ease
 
         .in-touch
           opacity: 0.8
@@ -416,24 +418,24 @@
         justify-content: center;
         align-items: center;
         transition: transform .5s ease;
-  
+
         .quotes {
           display: none;
         }
-  
+
         .person {
           left: initial;
           right: -20%;
           bottom: 0;
         }
-  
+
         .content {
           width: 100%;
           left: 0;
           padding: 0 6%;
           /*//position: static;*/
           bottom: 1vh;
-  
+
           .title {
             width: 100%;
             font-size: 70px;
