@@ -18,20 +18,21 @@
             | on Amazon Demand
 
         .watch-button
-          .watch-trailer(@click="onClickWatchTrailer")
-            .play
-            | Watch Trailer
+          transition(name="fade" mode="out-in")
+            .watch-trailer(@click="onClickWatchTrailer" v-if="!trailerLoading")
+              .play
+              | Watch Trailer
+            .watch-trailer(v-if="trailerLoading")
+              .watch-loader
 
     characters-component(v-on:showCharMobile="clickCharMobile")
     .smule(@click="onClickSmule")
-    transition(name="arrow")
-      .arrow(@click="onClickScroll" v-if="arrowVisible")
 </template>
 
 <script>
   import {TweenLite} from 'gsap';
   import ScrollToPlugin from 'gsap/src/uncompressed/plugins/ScrollToPlugin';
-  import debounce from 'throttle-debounce/debounce';
+  import throttle from 'throttle-debounce/debounce';
 
   import CharactersComponent from 'components/Characters';
   import store from 'store/Store';
@@ -39,6 +40,8 @@
 
   export default {
     name: "HeaderComponent",
+
+    props: ['trailerLoading'],
 
     components: {
       CharactersComponent
@@ -49,8 +52,6 @@
         karaoke: null,
         background: null,
         logo: null,
-
-        arrowVisible: true
       };
     },
 
@@ -71,17 +72,12 @@
         this.$emit('watchTrailer');
       },
 
-      onClickScroll: function () {
-        TweenLite.to(window, .5, {scrollTo: store().sectionReviews.offsetTop});
-      },
-
       onClickSmule: function () {
         TweenLite.to(window, 1, {scrollTo: store().sectionContest.offsetTop});
       },
 
       onScroll: function () {
-        debounce(100, () => {
-          this.arrowVisible = window.pageYOffset == 0;
+        throttle(100, () => {
           let dur = window.innerHeight;
           let progress = window.pageYOffset / dur;
           if (progress >= 0 && progress <= 1) {
@@ -101,6 +97,12 @@
 </script>
 
 <style lang="sss" scoped rel="stylesheet/sass">
+  .fade-enter-active, .fade-leave-active
+    transition: opacity .5s ease
+
+  .fade-enter, .fade-leave-active
+    opacity: 0.01
+
   .header
     height: 100vh
     min-height: 670px
@@ -109,6 +111,7 @@
     flex-flow: column nowrap
     align-items: center
     position: relative
+
     .bg
       position: absolute
       top: 0
@@ -205,17 +208,38 @@
         display: flex
         flex-flow: row nowrap
         align-items: center
+        outline: none
+        min-height: 55px
+
+        display: flex
+        flex-flow: row nowrap
+        justify-content: center
+        align-items: center
 
         transition: background 0.1s ease
 
         &:hover
-          background: hsla(0,0%,100%,.3)
+          @media (min-width: 769px)
+            background: hsla(0,0%, 100%, .3)
 
       &-trailer .play
         background: url("~assets/images/play.svg") no-repeat center center / contain
         margin-right: 10px
         height: 27px
         width: 27px
+
+      @keyframes spin
+        from
+          transform:rotate(0deg)
+        to
+          transform:rotate(360deg)
+
+      &-loader
+        background: url('~assets/images/trailer-loader.svg') no-repeat center center / contain
+        width: 40px
+        height: 40px
+        animation: spin 2s infinite linear
+        will-change: transform, opacity
 
     .smule
       position: absolute
@@ -229,26 +253,6 @@
 
     .smule:hover
       filter: drop-shadow(0px 0px 5px rgba(255, 200, 220, .5))
-
-    .arrow
-      position: absolute
-      bottom: 24px
-      left: 50%
-      transform: translateX(-50%)
-      background: url("~assets/images/arrow.svg") no-repeat center center / contain
-      height: 29px
-      width: 29px
-      cursor: pointer
-      z-index: 105
-
-    .arrow:hover
-      filter: drop-shadow(0px 0px 2px #ffffff)
-
-  .arrow-enter-active, .arrow-leave-active
-    transition: opacity .5s
-
-  .arrow-enter, .arrow-leave-active
-    opacity: 0.01
 
 
 </style>
@@ -267,6 +271,7 @@
   @media (max-width: 768px) {
     .header {
       height: 1030px;
+
       .smule {
         background: url("~assets/images/smule-tablet.png") no-repeat center center / contain;
         height: 63px;
@@ -276,7 +281,6 @@
         right: initial;
         left: 18px;
       }
-
 
       .logo {
         margin-top: 70px;

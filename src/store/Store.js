@@ -26,12 +26,30 @@ class Store {
   }
 
 
-  //========sizes===========
+  //========sizes & gadgets===========
 
   get isMobile() {return window.innerWidth <= 510;}
   get isTablet() {return window.innerWidth <= 768 && !this.isMobile;}
-  get isIPad() {return navigator.userAgent.match(/iPad/i) != null;}
+  
+  get isIPad() {return navigator.userAgent.match(/iPad/i);}
   get isIPhone() {return navigator.platform.match(/i(Phone|Pod)/i);}
+  get isAndroid() {return navigator.userAgent.match(/Android/i);}
+  get isGadget() {return this.isIPad || this.isIPhone || this.isAndroid;}
+  
+  getIosVersion() {
+    let match = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+  
+    if (match) {
+      let version = [
+        parseInt(match[1], 10),
+        parseInt(match[2], 10),
+        parseInt(match[3] || 0, 10)
+      ];
+      return parseFloat(version.join('.'));
+    }
+    
+    return 0;
+  }
 
 
 
@@ -83,6 +101,8 @@ class Store {
     {
       id: 'rob',
       name: 'Rob Riggle',
+      fbName: '@RobRiggle',
+      twName: '@RobRiggle',
       videos: [
         {
           type: this.TYPE_GIPHY,
@@ -109,16 +129,18 @@ class Store {
     {
       id: 'anne',
       name: 'Anne Heche',
+      fbName: 'Anne Heche',
+      twName: '@AnneHeche',
       videos: [
         {
           type: this.TYPE_GIPHY,
           id: "OSXrxGfHH0FSU",
-          preview: "assets/images/Anne_1.png"
+          preview: "assets/images/Anne_2.png"
         },
         {
           type: this.TYPE_GIPHY,
           id: "OQzy9a55nFG6s",
-          preview: "assets/images/Anne_2.png"
+          preview: "assets/images/Anne_1.png"
         },
         {
           type: this.TYPE_YOUTUBE,
@@ -135,10 +157,12 @@ class Store {
     {
       id: 'topher',
       name: 'Topher Grace',
+      fbName: '@TopherGrace',
+      twName: '@TopherGrace',
       videos: [
         {
           type: this.TYPE_YOUTUBE,
-          id: "MlnmQJPXESo",
+          id: "QN8vYpZwkMo",
           preview: "assets/images/Topher_1.png"
         },
         {
@@ -161,6 +185,8 @@ class Store {
     {
       id: 'alona',
       name: 'Alona Tal',
+      fbName: 'Alona Tal',
+      twName: '@talalona',
       videos: [
         {
           type: this.TYPE_YOUTUBE,
@@ -186,7 +212,9 @@ class Store {
     },
     {
       id: 'jc',
-      name: 'J. C. Chasez',
+      name: 'JC Chasez',
+      fbName: '@jcchasezofficial',
+      twName: '@JCChasez',
       videos: [
         {
           type: this.TYPE_YOUTUBE,
@@ -213,10 +241,12 @@ class Store {
     {
       id: 'taye',
       name: 'Taye Diggs',
+      fbName: '@TayeDiggs',
+      twName: '@TayeDiggs',
       videos: [
         {
           type: this.TYPE_YOUTUBE,
-          id: "DEuM8R3v1Pw",
+          id: "JMvG2k_In4Q",
           preview: "assets/images/Taye_1.png"
         },
         {
@@ -239,6 +269,8 @@ class Store {
     {
       id: 'paul',
       name: 'Paul Scheer',
+      fbName: '@thepaulsheer',
+      twName: '@paulsheer',
       videos: [
         {
           type: this.TYPE_YOUTUBE,
@@ -265,6 +297,8 @@ class Store {
     {
       id: 'lesli',
       name: 'Lesli Margherita',
+      fbName: 'Lesli Margherita',
+      twName: '@QueenLesli',
       videos: [
         {
           type: this.TYPE_YOUTUBE,
@@ -299,12 +333,17 @@ class Store {
 
   getFBVideoPost(video) {
     let videoURL = this.getVideoURL(video);
-    return `https://www.facebook.com/sharer/sharer.php?u=${videoURL}`;
+    //return `https://www.facebook.com/sharer/sharer.php?u=${videoURL}`;
+    return "https://www.facebook.com/sharer/sharer.php?u=http://openingnightthemovie.com";
   }
 
-  getTWVideoPost(video) {
+  getTWVideoPost(video, twName) {
     let videoURL = this.getVideoURL(video);
-    return `https://twitter.com/intent/tweet?text=Check%20this%20out!&amp;hashtags=OpeningNight&amp;url=${videoURL}`;
+    twName = encodeURIComponent(twName);
+    return `https://twitter.com/intent/tweet?` +
+      `text=Check%20out%20this%20hilarious%20clip%20with%20${twName}%20from%20the%20new%20movie%20Opening%20Night%20www.openingnightthemovie.com` +
+      `&amp;hashtags=1HitWonder` +
+      `&amp;url=${videoURL}`;
   }
 
   openSocialPopup(url, title = 'Social Share') {

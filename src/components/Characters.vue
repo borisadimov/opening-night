@@ -11,8 +11,8 @@
         .char-bg
         .char-player
           .char-video(v-bind:id="'video-char-' + index")
-            .video-player(v-bind:id="'video-player-char-' + index")
-            video.giphy(autoplay loop)
+            .video-player(v-bind:id="'video-player-char-' + index" v-show='currentType == TYPE_YOUTUBE')
+            video.giphy(autoplay loop playsinline muted v-bind:controls="showGifControls" v-show='currentType == TYPE_GIPHY')
           .char-socials
             | SHARE
             .facebook(@click="openFBVideoPost")
@@ -44,31 +44,31 @@
 
         currentChar: -1,
         currentVideo: 0,
+        currentType: store().TYPE_YOUTUBE,
         player: null,
         players: [],
 
         playerActive: false,
-        timeout: 0
+        timeout: 0,
+  
+        showGifControls: (store().isIPad || store().isIPhone) && store().getIosVersion() < 10
       }
     },
-  
+
     methods: {
       openFBVideoPost: function () {
         let char = this.chars[this.currentChar];
         let url = store().getFBVideoPost(char.videos[this.currentVideo]);
         store().openSocialPopup(url, 'Facebook share');
       },
-      
+
       openTWVideoPost: function () {
         let char = this.chars[this.currentChar];
-        let url = store().getTWVideoPost(char.videos[this.currentVideo]);
+        let url = store().getTWVideoPost(char.videos[this.currentVideo], char.twName);
         store().openSocialPopup(url, 'Twitter share');
       },
-      
-      setVideo: function () {
-        let playerId = `video-player-char-${this.currentChar}`;
-        let playerElm = document.getElementById(playerId);
 
+      setVideo: function () {
         let giphyElm = document.querySelector(`#video-char-${this.currentChar} .giphy`);
 
         let h = Math.round(window.innerWidth / 100 * 10.2);
@@ -83,18 +83,17 @@
             if (this.timeout)
               clearTimeout(this.timeout);
             this.timeout = setTimeout(() => {
-              this.player = new YouTubePlayer(playerId, {
-                playerVars: { 'autoplay': 1, 'controls': 0, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'disablekb': 1},
+              this.player = new YouTubePlayer(`video-player-char-${this.currentChar}`, {
+                playerVars: { 'autoplay': 0, 'controls': 0, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'disablekb': 1},
                 height: h.toString(),
                 width: w.toString(),
                 videoId: videoData.id
               });
               this.playerActive = true;
+              if (!store().isGadget)
+                this.player.playVideo();
             }, 400);
           }
-
-          giphyElm.style.visibility = 'hidden';
-          playerElm.style.visibility = 'visible';
 
         } else if (videoData.type == this.TYPE_GIPHY) {
           if (this.playerActive)
@@ -105,10 +104,9 @@
           giphyElm.height = h;
           giphyElm.src = (document.location.protocol == "https:" ? "https://" : "http://") +
             `//media.giphy.com/media/${videoData.id}/giphy.mp4`;
-
-          giphyElm.style.visibility = 'visible';
-          playerElm.style.visibility = 'hidden';
         }
+        
+        this.currentType = videoData.type;
       },
 
       onClickPreview: function (num) {
@@ -242,8 +240,8 @@
 
       .char-video
         display: inline-block
-        width: 5.5vw
-        height: 3vw
+        width: 5.7vw
+        height: 3.1vw
         margin-right: 1vw
         overflow: hidden
         outline: 2px transparent solid
@@ -274,6 +272,8 @@
     height: 18.25vw
     box-sizing: content-box
     padding-top: 0.2vw
+
+    box-shadow: 0 -30px 120px 0 rgba(25,0,30,1);
 
     .spacer
       position: absolute

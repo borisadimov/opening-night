@@ -6,12 +6,20 @@
 
     purchase-component(v-on:close="setWatch(false)" v-if="watchOpened")
 
-    .trailer-video(v-show="trailerActive")
-      .video-player#trailer-video
+    .trailer(v-show="trailerActive")
+      .trailer-close
+        .trailer-closeIcon(@click="trailerRemove")
+      .trailer-video
+        .video-player#trailer-video
 
     menu-component(v-on:watchOpen="setWatch(true)" v-on:nav="onScroll" v-bind:currentSection="currentSection")
 
-    header-component(v-on:watchOpen="setWatch(true)" v-on:watchTrailer="trailerWatch" v-on:showCharMobile="setCharMobile($event)")
+    header-component(
+      v-on:watchOpen="setWatch(true)"
+      v-on:watchTrailer="trailerWatch"
+      v-on:showCharMobile="setCharMobile($event)"
+      v-bind:trailerLoading="trailerLoading"
+      )
 
     slider-component
 
@@ -56,6 +64,8 @@
         .nav-copy
           | ©2016 BENITO FILMS, LLC ALL RIGHTS RESERVED.
 
+    link(href="//assets.juicer.io/embed.css" media="all" rel="stylesheet" type="text/css" v-if="load")
+
 </template>
 
 <script>
@@ -73,7 +83,7 @@ import CharactersPopupComponent from 'components/CharactersPopup';
 import store from 'store/Store';
 
 
-const trailerVideo = "BJwKK08_cPg";
+const trailerVideo = "C0Bi1_jLQAE";
 
 export default {
   components: {
@@ -98,12 +108,13 @@ export default {
       player: null,
       playerElm: null,
       trailerActive: false,
-  
+      trailerLoading: false,
+
       showWatchItByScroll: false,
       showWatchItByOpening: true
     }
   },
-  
+
   computed: {
     showWatchIt: function () {
       return this.showWatchItByScroll && this.showWatchItByOpening;
@@ -117,26 +128,37 @@ export default {
       document.addEventListener('DOMContentLoaded', this.handleLoad);
 
     window.addEventListener('scroll', this.onScroll);
-    /*
-    document.addEventListener('fullscreenchange', this.onFSChange);
-    document.addEventListener('webkitfullscreenchange', this.onFSChange);
-    document.addEventListener('mozfullscreenchange', this.onFSChange);
-    document.addEventListener('MSFullscreenChange', this.onFSChange);
-    */
+    window.addEventListener('resize', this.onResize);
 
     store().onReady();
     this.currentSection = store().SECTION_CAST;
 
-    this.player = new YouTubePlayer('trailer-video', {
-      playerVars: {'autoplay': 0, 'controls': 1, 'showinfo': 1, 'rel': 0, 'modestbranding': 1, 'disablekb': 0},
-      videoId: trailerVideo
-    });
-    this.player.addEventListener('onStateChange', this.trailerStateChange);
+    if (store().isGadget) {
+      this.player = new YouTubePlayer('trailer-video', {
+        playerVars: {'autoplay': 1, 'controls': 1, 'showinfo': 1, 'rel': 0, 'modestbranding': 1, 'disablekb': 0}
+      });
+
+      this.player.loadVideoById(trailerVideo)
+        .then(() => {
+          this.playerElm = document.getElementById('trailer-video');
+          this.playerElm.width = document.documentElement.clientWidth;
+          this.playerElm.height = window.innerHeight;
+        });
+    }
   },
 
   methods: {
     handleLoad: function () {
-      document.querySelector('#app').className = '';
+      setTimeout(()=>{
+        this.load = true;
+
+        var script   = document.createElement("script");
+        script.type  = "text/javascript";
+        script.src   = "//assets.juicer.io/embed.js";
+        document.body.appendChild(script);
+
+        document.querySelector('#app').className = '';
+      },300)
     },
 
     onScroll: function () {
@@ -152,8 +174,16 @@ export default {
           this.currentSection = store().SECTION_REVIEWS;
         else
           this.currentSection = store().SECTION_CAST;
-  
+
         this.showWatchItByScroll = window.scrollY > window.innerHeight;
+      })();
+    },
+
+    onResize: function () {
+      debounce(100, () => {
+        this.playerElm = document.getElementById('trailer-video');
+        this.playerElm.width = document.documentElement.clientWidth;
+        this.playerElm.height = window.innerHeight;
       })();
     },
 
@@ -168,48 +198,35 @@ export default {
     },
 
     trailerWatch: function () {
-      this.trailerActive = true;
-      window.scrollTo(0, 0);
-      this.player.playVideo();
+      this.trailerLoading = true;
 
-      this.playerElm = document.getElementById('trailer-video');
-      this.playerElm.width = document.documentElement.clientWidth;
-      this.playerElm.height = window.innerHeight;
+      if (!store().isGadget) {
+        this.player = new YouTubePlayer('trailer-video', {
+          playerVars: {'autoplay': 0, 'controls': 1, 'showinfo': 0, 'rel': 0, 'modestbranding': 1, 'disablekb': 0, 'frameborder': 0}
+        });
 
-      /*
-      let requestFullScreen =
-        this.playerElm.requestFullscreen ||
-        this.playerElm.webkitRequestFullscreen ||
-        this.playerElm.mozRequestFullScreen ||
-        this.playerElm.msRequestFullscreen;
-      if (requestFullScreen)
-        requestFullScreen.bind(this.playerElm)();
-      */
+        this.player.loadVideoById(trailerVideo)
+          .then(() => {
+            this.playerElm = document.getElementById('trailer-video');
+            this.playerElm.width = document.documentElement.clientWidth;
+            this.playerElm.height = window.innerHeight;
+          });
+      }
 
-      if (store().isIPhone)
-        setTimeout(() => this.trailerActive = false, 100);
-    },
-
-    onFSChange: function () {
-      setTimeout(() => {
-        let inFS =
-          document.fullscreenElement ||
-          document.webkitFullscreenElement ||
-          document.mozFullScreenElement ||
-          document.msFullscreenElement;
-        if (!inFS)
-          this.trailerRemove();
-      }, 10);
-    },
-
-    trailerStateChange: function (e) {
-      //on stop or end video
-      if (!store().isIPhone && (e.data == 0 || e.data == 2))
-        this.trailerRemove();
+      this.player.playVideo()
+        .then(() => {
+          window.scrollTo(0, 0);
+          if (!store().isIPhone)
+            this.trailerActive = true;
+          this.trailerLoading = false;
+        });
     },
 
     trailerRemove: function () {
-      this.player.stopVideo();
+      if (!store().isGadget)
+        this.player.destroy();
+      else
+        this.player.stopVideo();
       this.trailerActive = false;
     }
   }
@@ -349,13 +366,13 @@ export default {
     bottom: 0
     width: 100%
     overflow: hidden
-    
+
     z-index: 999
-  
+
     transform: translateY(120%)
     transition: transform 0.3s ease
     will-change: transform
-  
+
     &.watch-it-now-show
       transform: translateY(0)
 
@@ -447,6 +464,10 @@ export default {
       align-items: center
       cursor: pointer
 
+      display: none
+
+      text-align: center
+
       .separate
         margin: 0 10px
 
@@ -455,15 +476,49 @@ export default {
       font-size: 10px
       color: #5B6D82
       letter-spacing: 0.81px
-      
+      text-align: center
+      flex: 1
+
   .footer-watch-it
     padding-bottom: 100px
 
-  .trailer-video
-    position: absolute
-    width: 100%
+  .trailer
+    position: fixed
     height: 100%
+    width: 100%
+    top: 0
+    left: 0
     z-index: 20000
+
+    &-close
+      position: absolute
+      background: #000
+      z-index: 99999
+      left: 0
+      top: 0
+      height: 50px
+      width: 100%
+
+      &Icon
+        background: url('~assets/images/cancel.svg') no-repeat center center / contain
+        height: 25px
+        width: 25px
+
+        position: absolute
+        right: 15px
+        top: 20px
+
+        cursor: pointer
+
+      &Icon:hover
+        filter: drop-shadow(0px 0px 2px #ffffff)
+
+    &-video
+      position: absolute
+      width: 100%
+      height: 100%
+
+
 </style>
 
 
@@ -506,7 +561,7 @@ export default {
       .nav {
         flex-flow: column nowrap;
         padding-top: 0;
-        padding-bottom: 70px;
+        //- padding-bottom: 70px;
 
         &-list {
           font-size: 12px;
