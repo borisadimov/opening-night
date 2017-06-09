@@ -45,7 +45,7 @@
   }
 </script>
 
-<style lang="scss" scoped rel="stylesheet/scss">
+<style lang="scss"  rel="stylesheet/scss">
   .download {
     background-image: linear-gradient(-180deg, #30E1FF 7%, #178DFD 100%);
     padding: 60px 30px 0 50px;

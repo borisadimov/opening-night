@@ -357,7 +357,7 @@ export default {
     outline: none !important
 </style>
 
-<style lang="sss" scoped rel="stylesheet/sass">
+<style lang="sss"  rel="stylesheet/sass">
   .watch-it-bg
     transform: translateY(120%)
     transition: transform 0.3s ease
@@ -529,7 +529,7 @@ export default {
       width: 100%
       height: 100%
 </style>
-<style scoped lang="scss" rel="stylesheet/scss">
+<style  lang="scss" rel="stylesheet/scss">
   @media (max-width: 699px) {
     .watch-it-now-mobile {
       display: flex;

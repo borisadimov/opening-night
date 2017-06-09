@@ -30,7 +30,7 @@
   }
 </script>
 
-<style lang="scss" scoped rel="stylesheet/scss">
+<style lang="scss"  rel="stylesheet/scss">
   .v-enter-active, .v-leave-active {
     transition: opacity 0.3s ease;
 

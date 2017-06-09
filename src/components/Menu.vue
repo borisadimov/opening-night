@@ -98,7 +98,7 @@
   }
 </script>
 
-<style lang="sss" scoped rel="stylesheet/sass">
+<style lang="sss"  rel="stylesheet/sass">
   .menu
     position: fixed
     width: 100%
@@ -204,7 +204,7 @@
         opacity: 0.99
 </style>
 
-<style scoped lang="scss" rel="stylesheet/scss">
+<style  lang="scss" rel="stylesheet/scss">
 
   @media (max-width: 768px) {
     .menu {

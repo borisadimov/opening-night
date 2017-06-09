@@ -50,7 +50,7 @@
 
         playerActive: false,
         timeout: 0,
-  
+
         showGifControls: (store().isIPad || store().isIPhone) && store().getIosVersion() < 10
       }
     },
@@ -105,7 +105,7 @@
           giphyElm.src = (document.location.protocol == "https:" ? "https://" : "http://") +
             `//media.giphy.com/media/${videoData.id}/giphy.mp4`;
         }
-        
+
         this.currentType = videoData.type;
       },
 
@@ -154,7 +154,7 @@
   }
 </script>
 
-<style lang="sass" scoped rel="stylesheet/sass">
+<style lang="sass"  rel="stylesheet/sass">
   .characters
 
     .char-bg
@@ -349,7 +349,7 @@
           background-image: url("~assets/images/chars/lesli.png")
 </style>
 
-<style lang="sss" scoped rel="stylesheet/sass">
+<style lang="sss"  rel="stylesheet/sass">
   @media (min-width: 769px)
     .characters
       &:hover
@@ -481,7 +481,7 @@
           &:hover
             transform: skew(-18.5deg) scale(1.1) translate3D(-35vw,0,0)
 </style>
-<style lang="scss" scoped rel="stylesheet/scss">
+<style lang="scss"  rel="stylesheet/scss">
   @media (max-width: 768px) {
     .characters {
       height: 73vw;

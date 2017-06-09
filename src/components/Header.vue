@@ -96,7 +96,7 @@
   }
 </script>
 
-<style lang="sss" scoped rel="stylesheet/sass">
+<style lang="sss" rel="stylesheet/sass">
   .fade-enter-active, .fade-leave-active
     transition: opacity .5s ease
 
@@ -259,7 +259,7 @@
 
 </style>
 
-<style scoped lang="scss" rel="stylesheet/scss">
+<style  lang="scss" rel="stylesheet/scss">
 
   @media (max-width: 1140px) {
     .header {

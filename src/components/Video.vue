@@ -267,7 +267,7 @@
   }
 </script>
 
-<style lang="sss" scoped rel="stylesheet/sass">
+<style lang="sss"  rel="stylesheet/sass">
   .video
     background: #25182A
 
@@ -441,7 +441,7 @@
 
 </style>
 
-<style lang="scss" scoped>
+<style lang="scss" >
   @media (max-width: 699px) {
     .video .more-clips {
       background: #FEBE3F;

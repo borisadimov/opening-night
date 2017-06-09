@@ -170,7 +170,7 @@
   }
 </script>
 
-<style lang="sss" scoped rel="stylesheet/sass">
+<style lang="sss"  rel="stylesheet/sass">
   .slider
     height: 100vh
     width: 100%
@@ -415,7 +415,7 @@
 
 
 </style>
-<style lang="scss" scoped rel="stylesheet/scss">
+<style lang="scss"  rel="stylesheet/scss">
   @media (max-width: 768px) {
     .slider {
       .quote {
