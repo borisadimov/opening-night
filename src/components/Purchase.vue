@@ -6,13 +6,13 @@
         .title
           | SELECT A SOURCE TO START WATCHING
         .buttons
-          a.button-1(href="/")
+          a.button-1(target="_blank" href="https://www.amazon.com/Opening-Night-Isaac-Rentz/dp/B072JG9S7F/ref=sr_1_3?ie=UTF8&qid=1496927045&sr=8-3&keywords=opening+night")
             .button-inner
-          a.button-2(href="/")
+          a.button-2(target="_blank" href="https://itunes.apple.com/us/movie/opening-night/id1230733174")
             .button-inner
-          a.button-3(href="/")
+          a.button-3(target="_blank" href="https://play.google.com/store/movies/details/Opening_Night?id=5vO1bfhLwxA")
             .button-inner
-          a.button-4(href="/")
+          a.button-4(target="_blank" href="https://www.vudu.com/movies/#!content/864420/Opening-Night")
             .button-inner
 
         .available

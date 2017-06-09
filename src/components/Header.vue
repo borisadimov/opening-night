@@ -12,10 +12,10 @@
             .bg-2
             .text
               | Watch It Now
-          .watch-starting
-            | starting at
-            span $3.99
-            | on demand
+          //- .watch-starting
+          //-   | starting at
+          //-   span $3.99
+          //-   | on demand
 
         .watch-button
           transition(name="fade" mode="out-in")
@@ -26,7 +26,7 @@
               .watch-loader
 
     characters-component(v-on:showCharMobile="clickCharMobile")
-    .smule(@click="onClickSmule")
+    //- .smule(@click="onClickSmule")
 </template>
 
 <script>
@@ -58,7 +58,7 @@
     mounted: function () {
       window.addEventListener('scroll', this.onScroll);
 
-      this.karaoke = document.querySelector('.header .smule');
+      // this.karaoke = document.querySelector('.header .smule');
       this.background = document.querySelector('.header .bg');
       this.logo = document.querySelector('.header .logo-w-btn');
     },
@@ -83,7 +83,7 @@
           if (progress >= 0 && progress <= 1) {
             progress *= window.innerHeight / 100;
             TweenLite.to(this.background, 0.1, {y: (progress * 10), z: '0.01', ease: Power0.easeInOut});
-            TweenLite.to(this.karaoke, 0.1, {y: (progress * 30), z: '0.01', ease: Power0.easeInOut});
+            // TweenLite.to(this.karaoke, 0.1, {y: (progress * 30), z: '0.01', ease: Power0.easeInOut});
             TweenLite.to(this.logo, 0.1, {y: -(progress * 20), z: '0.01', ease: Power0.easeInOut});
           }
         })();
@@ -125,7 +125,7 @@
     .logo
       background: url("~assets/images/logo.png") no-repeat center center / contain
       height: 274px
-      margin-top: 46px
+      margin-top: 86px
 
     .watch
       display: flex

@@ -3,37 +3,37 @@
     .chasez
     .one-hit
       | #1HitWonder
-      .socials
-        .fb
-        .twitter
-        .ig
+      //- .socials
+      //-   .fb
+      //-   .twitter
+      //-   .ig
 
-    .download-item
-      .title
-        .title-image
-        .title-inner
-          | Sing a Karaoke Duet with a Broadway Star!
-
-      .steps
-        .steps-item
-          .steps-point
-            | 1.
-          .steps-text
-            | Download the <span>Sing! Karaoke by Smule</span> App
-            .images
-              a.image-1(href="https://itunes.apple.com/us/app/sing!-karaoke-by-smule/id509993510?mt=8")
-              a.image-2(href="https://play.google.com/store/apps/details?id=com.smule.singandroid")
-
-        .steps-item
-          .steps-point
-            | 2.
-          .steps-text
-            | Record a duet to <span>"Total Eclipse of the Heart" with Lesli Margherita</span>
-        .steps-item
-          .steps-point
-            | 3.
-          .steps-text
-            | Post to Facebook, Twitter or Instagram with the hashtag <span>#1HitWonder</span> and you will be entered to win $100 itunes gift card!
+    //- .download-item
+    //-   .title
+    //-     .title-image
+    //-     .title-inner
+    //-       | Sing a Karaoke Duet with a Broadway Star!
+    //-
+    //-   .steps
+    //-     .steps-item
+    //-       .steps-point
+    //-         | 1.
+    //-       .steps-text
+    //-         | Download the <span>Sing! Karaoke by Smule</span> App
+    //-         .images
+    //-           a.image-1(href="https://itunes.apple.com/us/app/sing!-karaoke-by-smule/id509993510?mt=8")
+    //-           a.image-2(href="https://play.google.com/store/apps/details?id=com.smule.singandroid")
+    //-
+    //-     .steps-item
+    //-       .steps-point
+    //-         | 2.
+    //-       .steps-text
+    //-         | Record a duet to <span>"Total Eclipse of the Heart" with Lesli Margherita</span>
+    //-     .steps-item
+    //-       .steps-point
+    //-         | 3.
+    //-       .steps-text
+    //-         | Post to Facebook, Twitter or Instagram with the hashtag <span>#1HitWonder</span> and you will be entered to win $100 itunes gift card!
 </template>
 
 <script>
@@ -74,6 +74,7 @@
       justify-content: center;
       align-items: flex-start;
       z-index: 555;
+      margin-bottom: 20px;
     }
 
     &-item {
@@ -87,7 +88,8 @@
       width: 55vw;
       height: 100%;
       position: absolute;
-      left: 0;
+      left: 40%;
+      //- margin-left: -%;
       bottom: 0;
     }
 
@@ -202,7 +204,7 @@
   @media (max-width: 920px) {
     .download {
       justify-content: flex-start;
-      height: 762px;
+      // height: 762px;
 
       .chasez {
         width: 450px;
@@ -215,7 +217,7 @@
   @media (max-width: 580px) {
     .download {
       justify-content: center;
-      height: 762px;
+      // height: 762px;
       padding-left: 30px;
       padding-right: 30px;
 
@@ -226,7 +228,7 @@
 
       .chasez {
         width: 450px;
-        left: initial;
+        left: 0;
         right: 0;
       }
 
@@ -256,7 +258,7 @@
       padding-top: 20px;
 
       .chasez {
-        display: none;
+        // display: none;
       }
 
       .title-inner {

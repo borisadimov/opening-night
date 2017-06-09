@@ -28,8 +28,8 @@
       .bg-2
       .title
         | Watch It Now
-      .subtitle
-        | starting at $3.99 on demand
+      //- .subtitle
+      //-   | starting at $3.99 on demand
 
     video-component
 
@@ -43,8 +43,8 @@
         .bg-2
         .title
           | Watch It Now
-        .subtitle
-          | starting at $3.99 on Amazon Demand
+        //- .subtitle
+        //-   | starting at $3.99 on Amazon Demand
 
     .footer(v-bind:class="{ 'footer-watch-it': this.showWatchIt }")
       .logos
